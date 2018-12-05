@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">HearingAnalyzer</string>
+    <string-array name="frequency_array">
+        <item>125</item>
+        <item>200</item>
+        <item>400</item>
+        <item>1000</item>
+        <item>3000</item>
+        <item>6500</item>
+        <item>8000</item>
+        <item>10000</item>
+    </string-array>
+    <string-array name="time_array">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+    </string-array>
+</resources>
