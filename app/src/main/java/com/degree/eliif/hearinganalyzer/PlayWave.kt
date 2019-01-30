@@ -1,10 +1,13 @@
 package com.degree.eliif.hearinganalyzer
 
+import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
+import android.media.SoundPool
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlin.concurrent.thread
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class PlayWave {
@@ -24,15 +27,18 @@ class PlayWave {
 
   private var VOLUME: Float = 0F
 
+  private var isPlaying = false
+
   init {
     mAudio = AudioTrack(
       AudioManager.STREAM_MUSIC,
       SAMPLE_RATE,
-      AudioFormat.CHANNEL_OUT_MONO,
+      AudioFormat.CHANNEL_OUT_STEREO,
       AudioFormat.ENCODING_PCM_16BIT,
       buffsize,
       AudioTrack.MODE_STATIC
     )
+
     mAudio.setVolume(0.0001F)
   }
 
@@ -57,13 +63,6 @@ class PlayWave {
   }
 
   /**
-   * Set up loop length
-   */
-  fun setLoopLength(time: Int) {
-    LOOP_LENGTH = time * FREQUENCY
-  }
-
-  /**
    * Set up volume
    */
   fun makeLouder(): Float {
@@ -79,16 +78,30 @@ class PlayWave {
     return VOLUME
   }
 
+  fun resetVolume() {
+    mAudio.setVolume(0F)
+  }
+
   /** 1sec - 1 Hertz **/
   fun play() {
     mAudio.reloadStaticData()
     mAudio.setLoopPoints(0, sampleCount, -1)
-    mAudio.play()
+
+    isPlaying = true
+
+    thread {
+      while (isPlaying) {
+        mAudio.play()
+        Thread.sleep(250)
+        mAudio.pause()
+        // mAudio.flush()
+        Thread.sleep(250)
+      }
+    }
   }
 
   fun stop() {
-    mAudio.pause()
-    mAudio.flush()
+    isPlaying = false
   }
 
 }

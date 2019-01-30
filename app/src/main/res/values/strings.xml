@@ -2,17 +2,21 @@
     <string name="app_name">HearingAnalyzer</string>
     <string-array name="frequency_array">
         <item>125</item>
-        <item>200</item>
-        <item>400</item>
+        <item>250</item>
+        <item>500</item>
+        <item>750</item>
         <item>1000</item>
+        <item>1500</item>
+        <item>2000</item>
         <item>3000</item>
-        <item>6500</item>
+        <item>4000</item>
+        <item>6000</item>
         <item>8000</item>
+        <item>9000</item>
         <item>10000</item>
-    </string-array>
-    <string-array name="time_array">
-        <item>1</item>
-        <item>2</item>
-        <item>5</item>
+        <item>11200</item>
+        <item>14000</item>
+        <item>16000</item>
+        <item>20000</item>
     </string-array>
 </resources>

@@ -1,8 +1,11 @@
 package com.degree.eliif.hearinganalyzer
 
+import android.media.AudioManager
+import android.media.SoundPool
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
@@ -12,11 +15,17 @@ import android.widget.Spinner
 import androidx.annotation.RequiresApi
 import com.degree.eliif.hearinganalyzer.R.id.textView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
+  lateinit var sp: SoundPool
+
+  var isPlaying = true
+
+  var sound: Int = 0
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +33,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     setContentView(R.layout.activity_main)
 
     setupWave = PlayWave()
+
+    sp = SoundPool(5, AudioManager.STREAM_MUSIC, 0)
+    // sp.setOnLoadCompleteListener(this)
+
+    sound = sp.load(this, R.raw.shoot, 0)
+
 
     /** Create frequency spinner **/
     val frequencySpinner: Spinner = this.findViewById(R.id.frequencySpinner)
@@ -37,20 +52,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     frequencySpinner.onItemSelectedListener = this
-
-    /** Create time spinner **/
-    val timeSpinner: Spinner = this.findViewById(R.id.timeSpinner)
-
-    ArrayAdapter.createFromResource(
-      this,
-      R.array.time_array,
-      android.R.layout.simple_spinner_item
-    ).also { adapter ->
-      adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-      timeSpinner.adapter = adapter
-    }
-
-    timeSpinner.onItemSelectedListener = this
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -61,13 +62,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
       setupWave.setWave(frequency.toString().toInt())
     }
-
-    if (parent?.id == R.id.timeSpinner) {
-      val time = parent.getItemAtPosition(pos)
-
-      setupWave.setLoopLength(time.toString().toInt())
-    }
-
   }
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -76,13 +70,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
-    setupWave.stop()
-    setupWave.play()
+    // setupWave.stop()
+    // setupWave.play()
+    sp.play(sound, 0F, 1F, 0, -1, 1F)
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun stopClick(view: View){
-    setupWave.stop()
+  fun stopClick(view: View) {
+    // setupWave.stop()
+    sp.stop(sound)
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -92,7 +88,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun quieterOnClick(view: View) {
-
     textView!!.text = setupWave.makeQuiter().toString()
   }
+}
+
+private fun SoundPool.setOnLoadCompleteListener(mainActivity: MainActivity) {
+
 }
