@@ -1,5 +1,6 @@
 package com.degree.eliif.hearinganalyzer
 
+import android.annotation.TargetApi
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
@@ -8,10 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
+import android.widget.*
 import androidx.annotation.RequiresApi
 import com.degree.eliif.hearinganalyzer.R.id.textView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,12 +19,9 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
-  lateinit var sp: SoundPool
+  lateinit var seekBar: SeekBar
 
-  var isPlaying = true
-
-  var sound: Int = 0
-
+  @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -34,12 +29,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
-    sp = SoundPool(5, AudioManager.STREAM_MUSIC, 0)
-    // sp.setOnLoadCompleteListener(this)
+    this.initializeSeekBar()
+    this.initializeSpinner()
+  }
 
-    sound = sp.load(this, R.raw.shoot, 0)
-
-
+  private fun initializeSpinner() {
     /** Create frequency spinner **/
     val frequencySpinner: Spinner = this.findViewById(R.id.frequencySpinner)
     ArrayAdapter.createFromResource(
@@ -52,6 +46,27 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     frequencySpinner.onItemSelectedListener = this
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  private fun initializeSeekBar() {
+    /** Initialize seek bar **/
+    seekBar = findViewById(R.id.seekBar)
+
+    seekBar.max = 100
+    seekBar.progress = 100
+
+    seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
+        textView!!.text = (progress * -1).toString()
+
+        setupWave.setVolume((progress * -1).toString().toInt())
+      }
+
+      override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+      override fun onStopTrackingTouch(p0: SeekBar?) {}
+    })
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -70,28 +85,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
-    // setupWave.stop()
-    // setupWave.play()
-    sp.play(sound, 0F, 1F, 0, -1, 1F)
+     setupWave.stop()
+     setupWave.play()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun stopClick(view: View) {
-    // setupWave.stop()
-    sp.stop(sound)
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun louderOnClick(view: View) {
-    textView!!.text = setupWave.makeLouder().toString()
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun quieterOnClick(view: View) {
-    textView!!.text = setupWave.makeQuiter().toString()
+    setupWave.stop()
   }
 }
 
-private fun SoundPool.setOnLoadCompleteListener(mainActivity: MainActivity) {
-
-}
