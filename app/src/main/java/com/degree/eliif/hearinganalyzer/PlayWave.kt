@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlin.concurrent.thread
+import kotlin.text.Typography.amp
 
 @TargetApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -19,11 +20,14 @@ class PlayWave {
     AudioFormat.ENCODING_PCM_16BIT
   )
 
+//  private val manager: AudioManager
+
   private var sampleCount: Int = 0
 
   private var FREQUENCY: Int = 1
 
   private var isPlaying = false
+
 
   /** Builder **/
   init {
@@ -41,24 +45,29 @@ class PlayWave {
       .setBufferSizeInBytes(buffsize)
       .build()
 
-    mAudio.setVolume(0F)
+    mAudio.setVolume(0.1F)
   }
 
   /**
    * Set up wave length
    */
   fun setWave(frequency: Int) {
+    Log.d("buffsize", buffsize.toString())
     FREQUENCY = frequency
-    sampleCount = ((SAMPLE_RATE / frequency).toFloat()).toInt()
-    val samples = ShortArray(sampleCount)
+    sampleCount = (((SAMPLE_RATE.toFloat() / frequency))).toInt()
+    val samples = ShortArray(SAMPLE_RATE)
+
+    Log.d("sampleCount", sampleCount.toString())
 
     val amp = 32767
-    val pi = 8.0 * Math.atan(1.0)
+    val pi = 2 * Math.PI
     var phase = 0.0
 
-    for (i in 0 until sampleCount) {
-      samples[i] = (amp * Math.sin(phase)).toShort()
-      phase += pi * frequency / SAMPLE_RATE
+    for (i in 0 until SAMPLE_RATE) {
+//      if (i % 2 != 0) {
+        samples[i] = (amp * Math.sin(phase)).toShort()
+        phase += pi * frequency / SAMPLE_RATE
+      // }
     }
 
     mAudio.write(samples, 0, sampleCount)
@@ -74,7 +83,7 @@ class PlayWave {
     mAudio.setLoopPoints(0, sampleCount, -1)
 
     isPlaying = true
-     // mAudio.play()
+//    mAudio.play()
 
     thread {
       while (isPlaying) {
@@ -89,8 +98,8 @@ class PlayWave {
 
   fun stop() {
     isPlaying = false
-//     mAudio.stop()
-//     mAudio.flush()
+    mAudio.stop()
+    mAudio.flush()
   }
 
   fun setVolume(inputDb: Int) {

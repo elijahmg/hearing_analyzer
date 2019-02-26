@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
-    this.initializeSeekBar()
+//    this.initializeSeekBar()
     this.initializeSpinner()
   }
 
