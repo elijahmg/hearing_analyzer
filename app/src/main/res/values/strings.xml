@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">HearingAnalyzer</string>
+
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="i_can_hear">I can hear</string>
+    <string name="i_cannot_hear">I cannot hear</string>
+    <string name="save_result">Save result</string>
+
+    <string name="left">Left Channel</string>
+    <string name="right">Right Channel</string>
+
+
     <string-array name="frequency_array">
         <item>125</item>
         <item>250</item>

@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlin.concurrent.thread
+import kotlin.text.Typography.amp
 
 @TargetApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -20,9 +21,12 @@ class PlayWave {
 
   private var sampleCount: Int = 0
 
-  private var FREQUENCY: Int = 1
+  private var FREQUENCY: Int = 0
+  private var AMP: Float = 800F
 
   private var isPlaying = false
+
+  private var LEFT_CHANNEL = true
 
 
   /** Builder **/
@@ -41,33 +45,55 @@ class PlayWave {
       .setBufferSizeInBytes(buffsize)
       .build()
 
-    mAudio.setVolume(0.1F)
+    mAudio.setVolume(1F)
+  }
+
+  fun setSide(left: Boolean) {
+    LEFT_CHANNEL = left
+  }
+
+  fun setFrequency(frequency: Int) {
+    FREQUENCY = frequency
+  }
+
+  fun less() {
+    AMP /= 2
+  }
+
+  fun more() {
+    AMP *= 2
   }
 
   /**
    * Set up wave length
    */
-  fun setWave(frequency: Int) {
-    FREQUENCY = frequency
-    sampleCount = SAMPLE_RATE / frequency
+  fun setWave() {
+    sampleCount = SAMPLE_RATE / FREQUENCY
     val samples = ShortArray(sampleCount)
-
-    val amp = 32767
     val pi = 2 * Math.PI
     var phase = 0.0
 
-    for (i in 0 until sampleCount) {
-      if (i % 2 != 0) {
-        samples[i] = (amp * Math.sin(phase)).toShort()
-        phase += pi * frequency / SAMPLE_RATE
+    when (LEFT_CHANNEL) {
+      true -> {
+        for (i in 0 until sampleCount) {
+          if (i % 2 == 0) {
+            samples[i] = (AMP * Math.sin(phase)).toShort()
+            phase += pi * FREQUENCY / SAMPLE_RATE
+          }
+        }
+      }
+
+      false -> {
+        for (i in 0 until sampleCount) {
+          if (i % 2 != 0) {
+            samples[i] = (AMP * Math.sin(phase)).toShort()
+            phase += pi * FREQUENCY / SAMPLE_RATE
+          }
+        }
       }
     }
 
     mAudio.write(samples, 0, sampleCount)
-  }
-
-  fun resetVolume() {
-    mAudio.setVolume(0F)
   }
 
   /** 1sec - 1 Hertz **/
@@ -75,34 +101,15 @@ class PlayWave {
     mAudio.reloadStaticData()
     mAudio.setLoopPoints(0, sampleCount, -1)
 
-    isPlaying = true
-//    mAudio.play()
-
     thread {
-      while (isPlaying) {
-        mAudio.play()
-        Thread.sleep(250)
-        mAudio.pause()
-        mAudio.flush()
-        Thread.sleep(250)
-      }
+      mAudio.play()
+      Thread.sleep(750)
+      mAudio.stop()
+      mAudio.flush()
     }
   }
 
   fun stop() {
     isPlaying = false
-//    mAudio.stop()
-//    mAudio.flush()
   }
-
-  fun setVolume(inputDb: Int) {
-    Log.d("Input db", inputDb.toString())
-    Log.d("db", ((inputDb.toFloat()) / 20).toDouble().toString())
-    Log.d("db withour double", (inputDb / 20).toString())
-
-    val gain = Math.pow(10.toDouble(), ((inputDb.toFloat()) / 20).toFloat().toDouble())
-    Log.d("gain", gain.toString())
-    mAudio.setVolume(gain.toFloat())
-  }
-
 }

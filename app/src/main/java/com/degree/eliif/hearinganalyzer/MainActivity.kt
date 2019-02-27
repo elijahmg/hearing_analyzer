@@ -1,25 +1,18 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.annotation.TargetApi
-import android.media.AudioManager
-import android.media.SoundPool
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
-import com.degree.eliif.hearinganalyzer.R.id.textView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
-  lateinit var seekBar: SeekBar
 
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -29,7 +22,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
-//    this.initializeSeekBar()
     this.initializeSpinner()
   }
 
@@ -49,33 +41,32 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  private fun initializeSeekBar() {
-    /** Initialize seek bar **/
-    seekBar = findViewById(R.id.seekBar)
-
-    seekBar.max = 100
-    seekBar.progress = 100
-
-    seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-      override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-        textView!!.text = (progress * -1).toString()
-
-        setupWave.setVolume((progress * -1).toString().toInt())
-      }
-
-      override fun onStartTrackingTouch(p0: SeekBar?) {}
-
-      override fun onStopTrackingTouch(p0: SeekBar?) {}
-    })
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
     if (parent?.id == R.id.frequencySpinner) {
       val frequency = parent.getItemAtPosition(pos)
       textView!!.text = frequency.toString()
 
-      setupWave.setWave(frequency.toString().toInt())
+      setupWave.setFrequency(frequency.toString().toInt())
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun onRadioButtonClicked(view: View) {
+    if (view is RadioButton) {
+      val checked = view.isChecked
+      setupWave.stop()
+
+      when (view.id) {
+        R.id.left ->
+          if (checked) {
+            setupWave.setSide(true)
+          }
+        R.id.right -> {
+          if (checked) {
+            setupWave.setSide(false)
+          }
+        }
+      }
     }
   }
 
@@ -85,13 +76,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
-     setupWave.stop()
-     setupWave.play()
+    setupWave.setWave()
+    Thread.sleep(200)
+    setupWave.play()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun stopClick(view: View) {
     setupWave.stop()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun less(view: View) {
+    setupWave.less()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun more(view: View) {
+    setupWave.more()
   }
 }
 
