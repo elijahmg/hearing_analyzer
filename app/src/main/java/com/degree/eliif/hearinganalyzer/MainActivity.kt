@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       val frequency = parent.getItemAtPosition(pos)
       textView!!.text = frequency.toString()
 
-      setupWave.setFrequency(frequency.toString().toInt())
+      setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
 
@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   fun onRadioButtonClicked(view: View) {
     if (view is RadioButton) {
       val checked = view.isChecked
-      setupWave.stop()
 
       when (view.id) {
         R.id.left ->
@@ -77,8 +76,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
     setupWave.setWave()
-    Thread.sleep(200)
-    setupWave.play()
+    Thread.sleep(750)
+    setupWave.stop()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
