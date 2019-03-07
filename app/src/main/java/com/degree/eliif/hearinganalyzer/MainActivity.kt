@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -44,7 +45,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
     if (parent?.id == R.id.frequencySpinner) {
       val frequency = parent.getItemAtPosition(pos)
-      textView!!.text = frequency.toString()
 
       setupWave.setFrequency(frequency.toString().toDouble())
     }
@@ -75,9 +75,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
-    setupWave.setWave()
-    Thread.sleep(750)
-    setupWave.stop()
+    textView!!.text = setupWave.getLevelDb()
+    thread {
+      setupWave.setWave()
+      Thread.sleep(750)
+      setupWave.mute()
+      Thread.sleep(300)
+      setupWave.stop()
+    }
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -88,11 +93,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
+    textView!!.text = setupWave.getLevelDb()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
+    textView!!.text = setupWave.getLevelDb()
   }
 }
 

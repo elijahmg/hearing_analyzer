@@ -20,15 +20,17 @@ class PlayWave {
     AudioFormat.ENCODING_PCM_16BIT
   )
 
-  private var sampleCount: Int = 32767
-
   private var FREQUENCY: Double = 440.0
-  private var LEVEL: Double = 16384.0
-  private var AMP: Float = 800F
+
+  private var LEVEL: Double = 3276.0
+
+  private var MUTE: Boolean = false
 
   private var isPlaying = true
 
   private var LEFT_CHANNEL = true
+
+  private var koef = Math.pow(10.0, 0.25) // 5dB
 
 
   /** Builder **/
@@ -59,11 +61,11 @@ class PlayWave {
   }
 
   fun less() {
-    LEVEL /= 2
+    LEVEL /= koef
   }
 
   fun more() {
-    LEVEL *= 2
+    LEVEL *= koef
   }
 
   /**
@@ -78,6 +80,7 @@ class PlayWave {
     }
 
     isPlaying = true
+    MUTE = false
 
     var sizes = arrayOf(1024, 2048, 4096, 8192, 16328, 32768)
 
@@ -104,20 +107,20 @@ class PlayWave {
       while (isPlaying) {
 
         for (i in 0 until samples.size) {
-          f += (FREQUENCY - f) / 4096.0
-          l += (l * 16384 - l) / 4096.0
+          f += (FREQUENCY - f) / 4096
+          l += ((if (MUTE) 0.0 else LEVEL) - l) / 4096
           q += if (q < Math.PI) f * k else (f * k) - (2.0 * Math.PI)
 
           when (LEFT_CHANNEL) {
             true -> {
               if (i % 2 == 0) {
-                samples[i] = Math.round(Math.sin(q) * LEVEL).toShort()
+                samples[i] = Math.round(Math.sin(q) * l).toShort()
               }
             }
 
             false -> {
               if (i % 2 != 0) {
-                samples[i] = Math.round(Math.sin(q) * LEVEL).toShort()
+                samples[i] = Math.round(Math.sin(q) * l).toShort()
               }
             }
           }
@@ -128,9 +131,17 @@ class PlayWave {
     }
   }
 
+  fun getLevelDb(): String {
+    return Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE)).toString() + "dB" + " / " + Math.round(LEVEL).toString()
+  }
+
+  fun mute() {
+    MUTE = true
+  }
+
   fun stop() {
     isPlaying = false
-    mAudio.stop()
-    mAudio.flush()
+     mAudio.stop()
+     mAudio.flush()
   }
 }
