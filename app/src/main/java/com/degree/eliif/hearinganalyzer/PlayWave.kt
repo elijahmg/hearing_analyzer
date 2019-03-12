@@ -3,11 +3,8 @@ package com.degree.eliif.hearinganalyzer
 import android.annotation.TargetApi
 import android.media.*
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlin.concurrent.thread
-import kotlin.math.sign
-import kotlin.text.Typography.amp
 
 @TargetApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -32,6 +29,9 @@ class PlayWave {
 
   private var koef = Math.pow(10.0, 0.25) // 5dB
 
+  var currentIndex: Int = 0
+
+  private var result = Result()
 
   /** Builder **/
   init {
@@ -68,6 +68,10 @@ class PlayWave {
     LEVEL *= koef
   }
 
+  fun getResult(): Result {
+    return result
+  }
+
   /**
    * Set up wave length
    */
@@ -96,6 +100,7 @@ class PlayWave {
     mAudio.play()
 
     val samples = ShortArray(size)
+
 
     var f = FREQUENCY
     var l = 0.0
@@ -143,5 +148,10 @@ class PlayWave {
     isPlaying = false
      mAudio.stop()
      mAudio.flush()
+  }
+
+  fun saveResult() {
+    val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
+    result.results[currentIndex] = FREQUENCY.toString() + "Hz: " + level.toString() + "dB\n"
   }
 }

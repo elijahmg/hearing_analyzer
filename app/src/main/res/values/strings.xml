@@ -10,6 +10,14 @@
     <string name="left">Left Channel</string>
     <string name="right">Right Channel</string>
 
+    <string name="info">
+        This is a Hear analyzer\n
+        Please set volume\n on phone/tablet\n and on external device to max
+    </string>
+
+    <string name="start">Start test</string>
+    <string name="result">Finish test and see results</string>
+    <string name="frequencies">Frequencies</string>
 
     <string-array name="frequency_array">
         <item>125</item>

@@ -1,6 +1,7 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.annotation.TargetApi
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     if (parent?.id == R.id.frequencySpinner) {
       val frequency = parent.getItemAtPosition(pos)
 
+      setupWave.currentIndex = pos
       setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
@@ -100,6 +102,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   fun more(view: View) {
     setupWave.more()
     textView!!.text = setupWave.getLevelDb()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun save(view: View) {
+    setupWave.saveResult()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun openResultActivity(view: View) {
+    val resultIntent = Intent(this, ResultsActivity::class.java)
+    resultIntent.putExtra("results", setupWave.getResult())
+    startActivity(resultIntent)
   }
 }
 
