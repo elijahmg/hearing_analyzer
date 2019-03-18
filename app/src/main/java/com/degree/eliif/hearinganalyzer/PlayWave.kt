@@ -17,9 +17,9 @@ class PlayWave {
     AudioFormat.ENCODING_PCM_16BIT
   )
 
-  private var FREQUENCY: Double = 440.0
+  private var FREQUENCY: Double = 400.0
 
-  private var LEVEL: Double = 3276.0
+  private var LEVEL: Double = 327.67
 
   private var MUTE: Boolean = false
 
@@ -28,6 +28,7 @@ class PlayWave {
   private var LEFT_CHANNEL = true
 
   private var koef = Math.pow(10.0, 0.25) // 5dB
+  private var koefOne = Math.pow(10.0, 0.05) // 1dB
 
   var currentIndex: Int = 0
 
@@ -50,6 +51,10 @@ class PlayWave {
       .build()
 
     mAudio.setVolume(1F)
+
+    val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
+    result.resultsLeft = mutableMapOf()
+    result.resultsRight = mutableMapOf()
   }
 
   fun setSide(left: Boolean) {
@@ -58,6 +63,14 @@ class PlayWave {
 
   fun setFrequency(frequency: Double) {
     FREQUENCY = frequency
+  }
+
+  fun precisionLess() {
+    LEVEL /= koefOne
+  }
+
+  fun precisionMore() {
+    LEVEL *= koefOne
   }
 
   fun less() {
@@ -140,18 +153,26 @@ class PlayWave {
     return Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE)).toString() + "dB" + " / " + Math.round(LEVEL).toString()
   }
 
+  fun resetLevel() {
+    LEVEL = 327.67
+  }
+
   fun mute() {
     MUTE = true
   }
 
   fun stop() {
     isPlaying = false
-     mAudio.stop()
-     mAudio.flush()
+    mAudio.stop()
+    mAudio.flush()
   }
 
   fun saveResult() {
     val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
-    result.results[currentIndex] = FREQUENCY.toString() + "Hz: " + level.toString() + "dB\n"
+    if (LEFT_CHANNEL) {
+      result.resultsLeft[FREQUENCY] = level
+    } else {
+      result.resultsRight[FREQUENCY] = level
+    }
   }
 }

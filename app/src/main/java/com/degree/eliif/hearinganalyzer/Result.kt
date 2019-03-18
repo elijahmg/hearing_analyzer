@@ -3,8 +3,9 @@ package com.degree.eliif.hearinganalyzer
 import java.io.Serializable
 
 class Result : Serializable {
-  var name: String = ""
-  var results: Array<String> = Array(17) { "" } // @todo change to map frequency : value, !!!side
+  var name: String = "" // todo
+  lateinit var resultsLeft: MutableMap<Double, Long>
+  lateinit var resultsRight: MutableMap<Double, Long>
 
   var goodResults = arrayOf(50, 90) // todo
 }

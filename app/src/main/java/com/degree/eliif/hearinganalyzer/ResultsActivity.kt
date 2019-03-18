@@ -13,12 +13,13 @@ class ResultsActivity : AppCompatActivity() {
     setContentView(R.layout.activity_results)
 
     resultObj = intent?.extras?.getSerializable("results") as Result
-    var resultAsString = ""
+    var resultAsStringLeft = ""
+    var resultAsStringRight = ""
 
-    for (i in 0 until resultObj.results.size) {
-      resultAsString += resultObj.results[i]
-    }
+    resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+    resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-    resultsTextView?.text = resultAsString
+    resultsTextViewRight?.text = resultAsStringRight
+    resultsTextViewLeft?.text = resultAsStringLeft
   }
 }

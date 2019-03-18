@@ -18,6 +18,11 @@
     <string name="start">Start test</string>
     <string name="result">Finish test and see results</string>
     <string name="frequencies">Frequencies</string>
+    <string name="amplitude">Amplitude</string>
+
+    <string name="results">Results</string>
+    <string name="leftEar">Left ear</string>
+    <string name="rightEar">Right ear</string>
 
     <string-array name="frequency_array">
         <item>125</item>

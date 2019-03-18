@@ -15,6 +15,7 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
+  lateinit var frequencySpinner: Spinner
 
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -27,9 +28,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     this.initializeSpinner()
   }
 
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   private fun initializeSpinner() {
     /** Create frequency spinner **/
-    val frequencySpinner: Spinner = this.findViewById(R.id.frequencySpinner)
+    frequencySpinner = this.findViewById(R.id.frequencySpinner)
     ArrayAdapter.createFromResource(
       this,
       R.array.frequency_array,
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     frequencySpinner.onItemSelectedListener = this
+    textView!!.text = setupWave.getLevelDb()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -48,6 +51,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       val frequency = parent.getItemAtPosition(pos)
 
       setupWave.currentIndex = pos
+      setupWave.resetLevel()
+      textView!!.text = setupWave.getLevelDb()
       setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
@@ -56,6 +61,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   fun onRadioButtonClicked(view: View) {
     if (view is RadioButton) {
       val checked = view.isChecked
+
+      setupWave.resetLevel()
+      frequencySpinner.setSelection(0)
+      textView!!.text = setupWave.getLevelDb()
 
       when (view.id) {
         R.id.left ->
@@ -88,11 +97,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun stopClick(view: View) {
-    setupWave.stop()
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
     textView!!.text = setupWave.getLevelDb()
@@ -101,6 +105,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
+    textView!!.text = setupWave.getLevelDb()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun precisionLess(view: View) {
+    setupWave.precisionLess()
+    textView!!.text = setupWave.getLevelDb()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun precisionMore(view: View) {
+    setupWave.precisionMore()
     textView!!.text = setupWave.getLevelDb()
   }
 
