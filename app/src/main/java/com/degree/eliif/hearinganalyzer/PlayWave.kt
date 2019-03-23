@@ -52,35 +52,57 @@ class PlayWave {
 
     mAudio.setVolume(1F)
 
-    val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
     result.resultsLeft = mutableMapOf()
     result.resultsRight = mutableMapOf()
   }
 
+  /**
+   * Set channel side
+   * @param {Boolean} left
+   */
   fun setSide(left: Boolean) {
     LEFT_CHANNEL = left
   }
 
+  /**
+   * Set frequency
+   * @param {Double} frequency
+   */
   fun setFrequency(frequency: Double) {
     FREQUENCY = frequency
   }
 
+  /**
+   * Reduce by 2db
+   */
   fun precisionLess() {
     LEVEL /= koefOne
   }
 
+  /**
+   * Increase by 2db
+   */
   fun precisionMore() {
     LEVEL *= koefOne
   }
 
+  /**
+   * Reduce by 5db
+   */
   fun less() {
     LEVEL /= koef
   }
 
+  /**
+   * Increase by 5db
+   */
   fun more() {
     LEVEL *= koef
   }
 
+  /**
+   * Return result object
+   */
   fun getResult(): Result {
     return result
   }
@@ -99,7 +121,7 @@ class PlayWave {
     isPlaying = true
     MUTE = false
 
-    var sizes = arrayOf(1024, 2048, 4096, 8192, 16328, 32768)
+    val sizes = arrayOf(1024, 2048, 4096, 8192, 16328, 32768)
 
     var size = 0
 
@@ -124,6 +146,7 @@ class PlayWave {
     thread {
       while (isPlaying) {
 
+        /** Create sin wave **/
         for (i in 0 until samples.size) {
           f += (FREQUENCY - f) / 4096
           l += ((if (MUTE) 0.0 else LEVEL) - l) / 4096
@@ -149,24 +172,39 @@ class PlayWave {
     }
   }
 
+  /**
+   * Return level in dB
+   */
   fun getLevelDb(): String {
     return Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE)).toString() + "dB" + " / " + Math.round(LEVEL).toString()
   }
 
+  /**
+   * Set level back to -40 dB
+   */
   fun resetLevel() {
     LEVEL = 327.67
   }
 
+  /**
+   * Mute signal
+   */
   fun mute() {
     MUTE = true
   }
 
+  /**
+   * Stop playing signal
+   */
   fun stop() {
     isPlaying = false
     mAudio.stop()
     mAudio.flush()
   }
 
+  /**
+   * Save result to result object
+   */
   fun saveResult() {
     val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
     if (LEFT_CHANNEL) {
