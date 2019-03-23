@@ -24,6 +24,9 @@
     <string name="leftEar">Left ear</string>
     <string name="rightEar">Right ear</string>
 
+    <string name="saveToFile">Save to file</string>
+    <string name="loadToFile">Load to file</string>
+
     <string-array name="frequency_array">
         <item>125</item>
         <item>250</item>

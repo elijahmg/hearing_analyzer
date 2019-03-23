@@ -13,7 +13,7 @@ class FirstScreenActivity : AppCompatActivity() {
   }
 
   fun startAnalyzerActivity(view: View) {
-    var intent = Intent(this, MainActivity::class.java)
+    val intent = Intent(this, MainActivity::class.java)
     startActivity(intent)
   }
 }
