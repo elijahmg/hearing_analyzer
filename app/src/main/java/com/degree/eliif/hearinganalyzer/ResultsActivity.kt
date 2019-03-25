@@ -3,6 +3,7 @@ package com.degree.eliif.hearinganalyzer
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -62,10 +63,10 @@ class ResultsActivity : AppCompatActivity() {
     val fis: FileInputStream = openFileInput(FILE_NAME)
 
     val ipr = InputStreamReader(fis)
-    val br = BufferedReader(ipr)
-    val resultsLeft = br.readLine()
+    val resultsLeft = ipr.buffered().use { block: BufferedReader -> block.readText() }
+    Log.d("re", resultsLeft)
 
-    resultsTextViewRight?.text = resultsLeft.toString().replace(",", "\n")
+    resultsTextViewRight?.text = resultsLeft.replace(",", "\n")
     fis.close()
   }
 }
