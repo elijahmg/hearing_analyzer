@@ -3,6 +3,7 @@ package com.degree.eliif.hearinganalyzer
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_results.*
@@ -37,9 +38,14 @@ class ResultsActivity : AppCompatActivity() {
     val fos: FileOutputStream = openFileOutput(FILE_NAME, Context.MODE_PRIVATE)
 
     try {
-      fos.write(resultObj.resultsLeft.toString().toByteArray())
+      var resultAsStringLeft = ""
 
-      Toast.makeText(this, "File has been saved", Toast.LENGTH_LONG).show()
+      resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "," }
+
+      resultAsStringLeft += "\n"
+      fos.write(resultAsStringLeft.toByteArray())
+
+      Toast.makeText(this, "File has been saved$filesDir", Toast.LENGTH_LONG).show()
     } catch (e: FileNotFoundException) {
       e.printStackTrace()
     } catch (e: IOException) {
@@ -57,15 +63,9 @@ class ResultsActivity : AppCompatActivity() {
 
     val ipr = InputStreamReader(fis)
     val br = BufferedReader(ipr)
+    val resultsLeft = br.readLine()
 
-    val strB = StringBuilder()
-    var string: String
-
-    while (br.readLine() != null) {
-      string = br.readLine()
-      strB.append(string).append("\n")
-    }
-
-    resultsTextViewRight?.text = strB.toString()
+    resultsTextViewRight?.text = resultsLeft.toString().replace(",", "\n")
+    fis.close()
   }
 }
