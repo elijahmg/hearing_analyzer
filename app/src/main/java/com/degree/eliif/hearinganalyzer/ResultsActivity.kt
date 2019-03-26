@@ -63,7 +63,7 @@ class ResultsActivity : AppCompatActivity() {
     val fis: FileInputStream = openFileInput(FILE_NAME)
 
     val ipr = InputStreamReader(fis)
-    val resultsLeft = ipr.buffered().use { block: BufferedReader -> block.readText() }
+    val resultsLeft = ipr.buffered().use { it.readText() }
     Log.d("re", resultsLeft)
 
     resultsTextViewRight?.text = resultsLeft.replace(",", "\n")
