@@ -1,6 +1,7 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.content.Context
+import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils.replace
@@ -21,6 +22,8 @@ class ResultsActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_results)
 
+    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     val isLoadAllow = intent?.extras?.get("loadLast")
 
     if (isLoadAllow != null) {
@@ -35,6 +38,15 @@ class ResultsActivity : AppCompatActivity() {
 
       resultsTextViewRight?.text = resultAsStringRight
       resultsTextViewLeft?.text = resultAsStringLeft
+
+      var isBadResult = false
+      resultObj.goodResults.forEach {
+        if (resultObj.resultsLeft[it.key] != null) {
+          isBadResult = resultObj.resultsLeft[it.key]!! < it.value
+        }
+      }
+
+      testResult?.text = if (isBadResult) "You have to see specialist" else "Your hear is good"
     }
   }
 
@@ -86,7 +98,6 @@ class ResultsActivity : AppCompatActivity() {
 
     val resultsLeft = leftStream.buffered().use { it.readText() }
     val resultsRight = rightStream.buffered().use { it.readText() }
-    Log.d("re", resultsLeft)
 
     resultsTextViewLeft?.text = resultsLeft.replace(",", "\n")
     resultsTextViewRight?.text = resultsRight.replace(",", "\n")

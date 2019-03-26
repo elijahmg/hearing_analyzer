@@ -55,9 +55,6 @@ class PlayWave {
       .build()
 
     mAudio.setVolume(1F)
-
-    result.resultsLeft = mutableMapOf()
-    result.resultsRight = mutableMapOf()
   }
 
   /**

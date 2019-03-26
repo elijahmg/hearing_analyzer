@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
+    supportActionBar?.setDisplayHomeAsUpEnabled(true)
     this.initializeSpinner()
   }
 

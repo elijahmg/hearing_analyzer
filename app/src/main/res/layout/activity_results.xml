@@ -9,22 +9,22 @@
     <TextView
         android:id="@+id/resultsTextViewLeft"
         android:layout_width="120dp"
-        android:layout_height="357dp"
+        android:layout_height="278dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="84dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/resultsTextViewRight"
         android:layout_width="120dp"
-        android:layout_height="357dp"
+        android:layout_height="279dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="84dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.83"
+        app:layout_constraintHorizontal_bias="0.856"
         app:layout_constraintStart_toEndOf="@+id/resultsTextViewLeft" />
 
     <TextView
@@ -33,14 +33,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="463dp"
         android:text="@string/results"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.191" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView5"
@@ -57,11 +58,12 @@
         android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:layout_marginStart="205dp"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="28dp"
         android:text="@string/rightEar"
         app:layout_constraintBottom_toTopOf="@+id/resultsTextViewRight"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.58"
         app:layout_constraintStart_toEndOf="@+id/textView5" />
 
     <Button
@@ -72,26 +74,42 @@
         android:layout_marginTop="80dp"
         android:layout_marginEnd="187dp"
         android:layout_marginBottom="38dp"
-        android:text="@string/saveToFile"
         android:onClick="saveToDoc"
+        android:text="@string/saveToFile"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintEnd_toStartOf="@+id/loadFromFile"
         app:layout_constraintHorizontal_bias="0.271"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.913" />
 
     <Button
         android:id="@+id/loadFromFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="18dp"
         android:onClick="loadFromDoc"
         android:text="@string/loadToFile"
         app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.754" />
+        app:layout_constraintVertical_bias="0.817" />
+
+    <TextView
+        android:id="@+id/testResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/loadFromFile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.674"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
