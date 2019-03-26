@@ -27,6 +27,9 @@
     <string name="saveToFile">Save to file</string>
     <string name="loadToFile">Load to file</string>
 
+    <string name="loadLastResult">Load last results</string>
+
+
     <string-array name="frequency_array">
         <item>125</item>
         <item>250</item>

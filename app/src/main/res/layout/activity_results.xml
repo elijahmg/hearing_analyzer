@@ -87,11 +87,11 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="18dp"
-        android:text="@string/loadToFile"
         android:onClick="loadFromDoc"
+        android:text="@string/loadToFile"
         app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.833" />
+        app:layout_constraintVertical_bias="0.754" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

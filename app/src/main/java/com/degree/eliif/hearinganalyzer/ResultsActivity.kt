@@ -14,21 +14,28 @@ import java.lang.StringBuilder
 class ResultsActivity : AppCompatActivity() {
 
   private lateinit var resultObj: Result
-  private var FILE_NAME = "result.txt"
+  private var LEFT_FILE_NAME = "leftResult.txt"
+  private var RIGHT_FILE_NAME = "rightResult.txt"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_results)
 
-    resultObj = intent?.extras?.getSerializable("results") as Result
-    var resultAsStringLeft = ""
-    var resultAsStringRight = ""
+    val isLoadAllow = intent?.extras?.get("loadLast")
 
-    resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
-    resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+    if (isLoadAllow != null) {
+      this.load()
+    } else {
+      resultObj = intent?.extras?.getSerializable("results") as Result
+      var resultAsStringLeft = ""
+      var resultAsStringRight = ""
 
-    resultsTextViewRight?.text = resultAsStringRight
-    resultsTextViewLeft?.text = resultAsStringLeft
+      resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+      resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+
+      resultsTextViewRight?.text = resultAsStringRight
+      resultsTextViewLeft?.text = resultAsStringLeft
+    }
   }
 
 
@@ -36,15 +43,21 @@ class ResultsActivity : AppCompatActivity() {
    * Save to external doc
    */
   fun saveToDoc(view: View) {
-    val fos: FileOutputStream = openFileOutput(FILE_NAME, Context.MODE_PRIVATE)
+    val leftFile: FileOutputStream = openFileOutput(LEFT_FILE_NAME, Context.MODE_PRIVATE)
+    val rightFile: FileOutputStream = openFileOutput(RIGHT_FILE_NAME, Context.MODE_PRIVATE)
 
     try {
       var resultAsStringLeft = ""
+      var resultAsStringRight = ""
 
       resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "," }
+      resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "," }
 
       resultAsStringLeft += "\n"
-      fos.write(resultAsStringLeft.toByteArray())
+      resultAsStringRight += "\n"
+
+      leftFile.write(resultAsStringLeft.toByteArray())
+      rightFile.write(resultAsStringRight.toByteArray())
 
       Toast.makeText(this, "File has been saved$filesDir", Toast.LENGTH_LONG).show()
     } catch (e: FileNotFoundException) {
@@ -53,20 +66,32 @@ class ResultsActivity : AppCompatActivity() {
       e.printStackTrace()
     }
 
-    fos.close()
+    leftFile.close()
+    rightFile.close()
   }
 
   /**
    * Load from doc
    */
   fun loadFromDoc(view: View) {
-    val fis: FileInputStream = openFileInput(FILE_NAME)
+    this.load()
+  }
 
-    val ipr = InputStreamReader(fis)
-    val resultsLeft = ipr.buffered().use { it.readText() }
+  private fun load () {
+    val leftFile: FileInputStream = openFileInput(LEFT_FILE_NAME)
+    val rightFile: FileInputStream = openFileInput(RIGHT_FILE_NAME)
+
+    val leftStream = InputStreamReader(leftFile)
+    val rightStream = InputStreamReader(rightFile)
+
+    val resultsLeft = leftStream.buffered().use { it.readText() }
+    val resultsRight = rightStream.buffered().use { it.readText() }
     Log.d("re", resultsLeft)
 
-    resultsTextViewRight?.text = resultsLeft.replace(",", "\n")
-    fis.close()
+    resultsTextViewLeft?.text = resultsLeft.replace(",", "\n")
+    resultsTextViewRight?.text = resultsRight.replace(",", "\n")
+
+    leftFile.close()
+    rightFile.close()
   }
 }

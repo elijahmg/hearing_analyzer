@@ -16,4 +16,10 @@ class FirstScreenActivity : AppCompatActivity() {
     val intent = Intent(this, MainActivity::class.java)
     startActivity(intent)
   }
+
+  fun startResultActivity(view: View) {
+    val intent = Intent(this, ResultsActivity::class.java)
+    intent.putExtra("loadLast", true);
+    startActivity(intent)
+  }
 }
