@@ -3,8 +3,11 @@
 
     <string name="play">Play</string>
     <string name="stop">Stop</string>
-    <string name="i_can_hear">I can hear</string>
-    <string name="i_cannot_hear">I cannot hear</string>
+    <string name="iCanHear">-5 dB</string>
+    <string name="iCannotHear">+ 5dB</string>
+
+    <string name="nextFrq">Next Frequency</string>
+    <string name="previousFrq">Previous Frequency</string>
     <string name="save_result">Save result</string>
 
     <string name="left">Left Channel</string>
@@ -29,7 +32,6 @@
 
     <string name="loadLastResult">Load last results</string>
 
-
     <string-array name="frequency_array">
         <item>125</item>
         <item>250</item>
@@ -48,17 +50,5 @@
         <item>14000</item>
         <item>16000</item>
         <item>20000</item>
-    </string-array>
-
-    <string-array name="gain_array">
-        <item>-100</item>
-        <item>-80</item>
-        <item>-40</item>
-        <item>-20</item>
-        <item>-10</item>
-        <item>-6</item>
-        <item>-3</item>
-        <item>-1</item>
-        <item>0</item>
     </string-array>
 </resources>

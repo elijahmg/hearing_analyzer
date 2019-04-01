@@ -1,10 +1,15 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.annotation.TargetApi
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -21,12 +26,27 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Log.d("create", savedInstanceState.toString())
+
+
     setContentView(R.layout.activity_main)
 
     setupWave = PlayWave()
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
     this.initializeSpinner()
+  }
+
+  override fun onSaveInstanceState(outState: Bundle?) {
+    outState?.putInt("pos", 3)
+    Log.d("saving", outState.toString())
+    super.onSaveInstanceState(outState)
+  }
+
+  override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    super.onRestoreInstanceState(savedInstanceState)
+    Log.d("restoring", savedInstanceState.toString())
+    Toast.makeText(this, "Resotring", Toast.LENGTH_LONG).show()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -54,6 +74,38 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       setupWave.currentIndex = pos
       setupWave.resetLevel()
       textView!!.text = setupWave.getLevelDb()
+      setupWave.setFrequency(frequency.toString().toDouble())
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun setNextFrequency(view: View) {
+    val spinnerLength = frequencySpinner.adapter.count
+
+    if (setupWave.currentIndex + 1 > spinnerLength - 1) {
+      Toast.makeText(this, "This is the last frequency", Toast.LENGTH_LONG).show()
+    } else {
+      setupWave.currentIndex += 1
+
+      frequencySpinner.setSelection(setupWave.currentIndex)
+      val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
+
+      setupWave.resetLevel()
+      setupWave.setFrequency(frequency.toString().toDouble())
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun setPreviousFrequency(view: View) {
+    if (setupWave.currentIndex - 1 < 0) {
+      Toast.makeText(this, "This is the first frequency", Toast.LENGTH_LONG).show()
+    } else {
+      setupWave.currentIndex -= 1
+
+      frequencySpinner.setSelection(setupWave.currentIndex)
+      val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
+
+      setupWave.resetLevel()
       setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
@@ -124,6 +176,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun save(view: View) {
     setupWave.saveResult()
+
+    Toast.makeText(this, "Results have been saved", Toast.LENGTH_SHORT).show()
+
+    this.setNextFrequency(view)
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -133,4 +189,3 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     startActivity(resultIntent)
   }
 }
-
