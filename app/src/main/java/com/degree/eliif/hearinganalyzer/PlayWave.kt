@@ -1,13 +1,9 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.annotation.TargetApi
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.media.*
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import java.io.FileOutputStream
 import kotlin.concurrent.thread
 
 @TargetApi(Build.VERSION_CODES.M)

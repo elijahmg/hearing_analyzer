@@ -2,15 +2,23 @@ package com.degree.eliif.hearinganalyzer
 
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 
 class FirstScreenActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.first_screen)
+
+    val manager =  getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    val maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+    manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+
+    Toast.makeText(this, "Volume of your device has been set to max", Toast.LENGTH_LONG).show()
   }
 
   fun startAnalyzerActivity(view: View) {

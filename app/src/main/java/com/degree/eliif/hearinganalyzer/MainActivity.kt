@@ -3,9 +3,11 @@ package com.degree.eliif.hearinganalyzer
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -206,7 +208,21 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
   }
 
-//  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+    if (event?.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+      || event?.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+      val dialog = VolumeDialog()
+      dialog.show(supportFragmentManager, "volume")
+
+      val manager =  getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      val maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+      manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+    }
+
+    return false
+  }
+
+  //  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 //  fun precisionLess(view: View) {
 //    setupWave.precisionLess()
 //    textView!!.text = setupWave.getLevelDb()
