@@ -29,7 +29,7 @@ class PlayWave {
 
   private var isPlaying = true
 
-  private var LEFT_CHANNEL = true
+  var LEFT_CHANNEL = true
 
   private var koef = Math.pow(10.0, 0.25) // 5dB
   private var koefOne = Math.pow(10.0, 0.05) // 1dB
@@ -55,6 +55,10 @@ class PlayWave {
       .build()
 
     mAudio.setVolume(1F)
+  }
+
+  fun setResult(result: Result) {
+    this.result = result
   }
 
   /**

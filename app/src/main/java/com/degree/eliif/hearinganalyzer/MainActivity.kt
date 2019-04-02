@@ -3,16 +3,13 @@ package com.degree.eliif.hearinganalyzer
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.concurrent.thread
 
@@ -26,8 +23,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Log.d("create", savedInstanceState.toString())
-
 
     setContentView(R.layout.activity_main)
 
@@ -35,18 +30,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
     this.initializeSpinner()
-  }
-
-  override fun onSaveInstanceState(outState: Bundle?) {
-    outState?.putInt("pos", 3)
-    Log.d("saving", outState.toString())
-    super.onSaveInstanceState(outState)
-  }
-
-  override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-    super.onRestoreInstanceState(savedInstanceState)
-    Log.d("restoring", savedInstanceState.toString())
-    Toast.makeText(this, "Resotring", Toast.LENGTH_LONG).show()
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -64,6 +47,40 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     frequencySpinner.onItemSelectedListener = this
     textView!!.text = setupWave.getLevelDb()
+
+    /** Restore activity state **/
+    this.setSharedValues()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun setSharedValues() {
+    val sharedPref = getSharedPreferences("share", Context.MODE_PRIVATE)?: return
+    val position = sharedPref.getInt("pos", -1)
+    val resultAsString = sharedPref.getString("result", "")
+    val side = sharedPref.getBoolean("side", true)
+
+    /** Setting frequency **/
+    if (position != -1) {
+      frequencySpinner.setSelection(position)
+      val frequency = frequencySpinner.getItemAtPosition(position)
+
+      setupWave.resetLevel()
+      setupWave.setFrequency(frequency.toString().toDouble())
+    }
+
+    /** Setting object **/
+    if (resultAsString != "") {
+      val gson = Gson()
+      val resultAsObject = gson.fromJson(resultAsString, Result::class.java)
+
+      setupWave.setResult(resultAsObject)
+    }
+
+    val left = findViewById<RadioButton>(R.id.left)
+    val right = findViewById<RadioButton>(R.id.right)
+
+    left.isChecked = side
+    right.isChecked = !side
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -162,18 +179,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun precisionLess(view: View) {
-    setupWave.precisionLess()
-    textView!!.text = setupWave.getLevelDb()
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun precisionMore(view: View) {
-    setupWave.precisionMore()
-    textView!!.text = setupWave.getLevelDb()
-  }
-
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun save(view: View) {
     setupWave.saveResult()
 
@@ -187,5 +192,29 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     val resultIntent = Intent(this, ResultsActivity::class.java)
     resultIntent.putExtra("results", setupWave.getResult())
     startActivity(resultIntent)
+
+
+    val sharedRef = getSharedPreferences("share",Context.MODE_PRIVATE) ?: return
+    val gson = Gson()
+    val objAsString = gson.toJson(setupWave.getResult())
+
+    with(sharedRef.edit()) {
+      putInt("pos", setupWave.currentIndex)
+      putString("result", objAsString)
+      putBoolean("side", setupWave.LEFT_CHANNEL)
+      apply()
+    }
   }
+
+//  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+//  fun precisionLess(view: View) {
+//    setupWave.precisionLess()
+//    textView!!.text = setupWave.getLevelDb()
+//  }
+//
+//  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+//  fun precisionMore(view: View) {
+//    setupWave.precisionMore()
+//    textView!!.text = setupWave.getLevelDb()
+//  }
 }

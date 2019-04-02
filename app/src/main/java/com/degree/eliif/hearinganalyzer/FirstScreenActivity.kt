@@ -1,5 +1,6 @@
 package com.degree.eliif.hearinganalyzer
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +16,9 @@ class FirstScreenActivity : AppCompatActivity() {
   fun startAnalyzerActivity(view: View) {
     val intent = Intent(this, MainActivity::class.java)
     startActivity(intent)
+
+    val sharedPreferences = getSharedPreferences("share", Context.MODE_PRIVATE)
+    sharedPreferences.edit().clear().apply()
   }
 
   fun startResultActivity(view: View) {
