@@ -196,5 +196,54 @@
         app:layout_constraintTop_toBottomOf="@+id/frequencySpinner"
         app:layout_constraintVertical_bias="0.882" />
 
+    <ProgressBar
+        android:id="@+id/leftProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="297dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="53dp"
+        android:layout_marginTop="424dp"
+        android:layout_marginEnd="53dp"
+        android:max="16"
+        android:progress="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/rightProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="297dp"
+        android:layout_height="11dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="34dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginBottom="47dp"
+        android:max="16"
+        android:progress="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leftProgress"
+        app:layout_constraintVertical_bias="0.833" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+        tools:layout_editor_absoluteX="36dp"
+        tools:layout_editor_absoluteY="397dp" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+        tools:layout_editor_absoluteX="35dp"
+        tools:layout_editor_absoluteY="477dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

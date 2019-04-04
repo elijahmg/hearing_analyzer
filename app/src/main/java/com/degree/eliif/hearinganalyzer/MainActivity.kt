@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.*
@@ -21,6 +22,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   lateinit var setupWave: PlayWave
   lateinit var frequencySpinner: Spinner
 
+  lateinit var leftProgress: ProgressBar
+  lateinit var rightProgress: ProgressBar
+
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +34,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
+    leftProgress = findViewById(R.id.leftProgress)
+    rightProgress = findViewById(R.id.rightProgress)
+
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     this.initializeSpinner()
   }
 
@@ -141,11 +149,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       when (view.id) {
         R.id.left ->
           if (checked) {
-            setupWave.setSide(true)
+            setupWave.LEFT_CHANNEL = true
           }
         R.id.right -> {
           if (checked) {
-            setupWave.setSide(false)
+            setupWave.LEFT_CHANNEL = false
           }
         }
       }
@@ -183,6 +191,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun save(view: View) {
     setupWave.saveResult()
+    Log.d("size", setupWave.getResult().resultsLeft.size.toString())
+
+    when (setupWave.LEFT_CHANNEL) {
+      true -> {
+       leftProgress.progress = setupWave.getResult().resultsLeft.size
+      }
+
+      false -> {
+        rightProgress.progress = setupWave.getResult().resultsRight.size
+      }
+    }
 
     Toast.makeText(this, "Results have been saved", Toast.LENGTH_SHORT).show()
 

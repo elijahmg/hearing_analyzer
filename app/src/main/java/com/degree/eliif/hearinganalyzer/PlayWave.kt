@@ -58,14 +58,6 @@ class PlayWave {
   }
 
   /**
-   * Set channel side
-   * @param {Boolean} left
-   */
-  fun setSide(left: Boolean) {
-    LEFT_CHANNEL = left
-  }
-
-  /**
    * Set frequency
    * @param {Double} frequency
    */
