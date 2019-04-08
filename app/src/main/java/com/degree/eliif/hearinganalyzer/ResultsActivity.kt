@@ -1,12 +1,15 @@
 package com.degree.eliif.hearinganalyzer
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_results.*
+import lecho.lib.hellocharts.model.*
+import lecho.lib.hellocharts.view.LineChartView
 import java.io.*
 
 class ResultsActivity : AppCompatActivity() {
@@ -14,11 +17,52 @@ class ResultsActivity : AppCompatActivity() {
   private lateinit var resultObj: Result
   private var RESULT_FILE = "result.json"
 
+  private lateinit var chart: LineChartView
+
+  private var axisData: MutableList<Int> = mutableListOf(3, 6, 7, 9, 7)
+  private var yAxisData: MutableList<Int> = mutableListOf(5, 6, 7, 9, 7)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_results)
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+    chart = findViewById(R.id.chart)
+
+    val xAxisValues = mutableListOf<AxisValue>()
+    val yAxisValues = mutableListOf<PointValue>()
+
+    val line = Line(yAxisValues).setColor(Color.BLACK)
+
+    for (i in 0 until axisData.size) {
+      xAxisValues.add(i, AxisValue(i.toFloat()).setLabel(axisData[i].toString()))
+    }
+
+    for (i in 0 until yAxisData.size) {
+      yAxisValues.add(i, PointValue(i.toFloat(), yAxisData[i].toFloat()))
+    }
+
+    val lineChart = LineChartData()
+
+    val lines: MutableList<Line> = mutableListOf()
+
+    lines.add(line)
+
+    lineChart.lines = lines
+
+
+    val xAxis = Axis()
+    xAxis.name = "Freq"
+    lineChart.axisXTop = xAxis
+
+    val xYxis = Axis()
+    xYxis.name = "Db"
+    lineChart.axisYLeft = xYxis
+
+
+    chart.lineChartData = lineChart
+
 
     val isLoadAllow = intent?.extras?.get("loadLast")
 
@@ -32,8 +76,8 @@ class ResultsActivity : AppCompatActivity() {
       resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
       resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-      resultsTextViewRight?.text = resultAsStringRight
-      resultsTextViewLeft?.text = resultAsStringLeft
+//       resultsTextViewRight?.text = resultAsStringRight
+      //   resultsTextViewLeft?.text = resultAsStringLeft
 
       var isBadResult = false
       resultObj.goodResults.forEach {
@@ -45,6 +89,7 @@ class ResultsActivity : AppCompatActivity() {
       testResult?.text = if (isBadResult) "You have to see specialist" else "Your hear is good"
     }
   }
+
 
   /**
    * Save to external doc
@@ -75,7 +120,7 @@ class ResultsActivity : AppCompatActivity() {
     this.load()
   }
 
-  private fun load () {
+  private fun load() {
     val leftFile: FileInputStream = openFileInput(RESULT_FILE)
 
     val leftStream = InputStreamReader(leftFile)
@@ -93,8 +138,8 @@ class ResultsActivity : AppCompatActivity() {
     result.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
     result.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-    resultsTextViewRight?.text = resultAsStringRight
-    resultsTextViewLeft?.text = resultAsStringLeft
+    // resultsTextViewRight?.text = resultAsStringRight
+    // resultsTextViewLeft?.text = resultAsStringLeft
 
     leftFile.close()
   }
