@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="?attr/colorBackgroundFloating"
-    tools:context=".MainActivity">
+    tools:context=".Actvities.MainActivity">
 
     <RadioGroup
         android:id="@+id/radioGroup2"
@@ -74,7 +74,7 @@
         android:id="@+id/lessVolume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="24dp"
         android:onClick="less"
         android:text="@string/iCanHear"
         app:layout_constraintBaseline_toBaselineOf="@+id/moreVolume"
@@ -107,8 +107,8 @@
         android:id="@+id/finishTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="65dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="36dp"
         android:onClick="openResultActivity"
         android:text="@string/result"
         app:layout_constraintStart_toStartOf="parent"
@@ -155,66 +155,126 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="139dp"
         android:layout_marginEnd="13dp"
-        android:onClick="setNextFrequency"
         android:text="@string/nextFrq"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/calibrationLayout"
+        android:layout_width="367dp"
+        android:layout_height="127dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <Button
+            android:id="@+id/saveCalibrations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/saveCalibration"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <EditText
+            android:id="@+id/calibSpl"
+            android:layout_width="158dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="db SPL "
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/calibHl"
+            android:layout_width="151dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="db HL"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:focusable="true"
+            app:layout_constraintBaseline_toBaselineOf="@+id/calibSpl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/calibSpl" />
+
+        <Button
+            android:id="@+id/finishCalib"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/finishCalibration"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ProgressBar
         android:id="@+id/leftProgress"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="127dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginBottom="126dp"
+        android:layout_width="265dp"
+        android:layout_height="17dp"
+        android:layout_marginBottom="32dp"
         android:max="16"
         android:progress="0"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rightProgress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toTopOf="@+id/finishTest" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView8" />
 
     <ProgressBar
         android:id="@+id/rightProgress"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="11dp"
-        android:layout_marginTop="57dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginBottom="58dp"
+        android:layout_width="265dp"
+        android:layout_height="17dp"
+        android:layout_marginBottom="16dp"
         android:max="16"
         android:progress="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/leftProgress" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView7" />
 
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:text="Right"
-        app:layout_constraintBottom_toBottomOf="@+id/rightProgress"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/rightProgress"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rightProgress" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="75dp"
-        android:layout_marginEnd="47dp"
-        android:layout_marginBottom="76dp"
+        android:layout_marginTop="36dp"
         android:text="Left"
-        app:layout_constraintBottom_toBottomOf="@+id/textView7"
         app:layout_constraintEnd_toStartOf="@+id/leftProgress"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishTest" />
+        app:layout_constraintTop_toBottomOf="@+id/calibrationLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

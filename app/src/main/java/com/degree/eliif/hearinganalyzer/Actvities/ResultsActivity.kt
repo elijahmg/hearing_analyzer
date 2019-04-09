@@ -1,4 +1,4 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Actvities
 
 import android.content.Context
 import android.graphics.Color
@@ -6,8 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.degree.eliif.hearinganalyzer.POJO.Result
+import com.degree.eliif.hearinganalyzer.R
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_results.*
 import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.view.LineChartView
 import java.io.*
@@ -76,17 +77,6 @@ class ResultsActivity : AppCompatActivity() {
       resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
       resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-//       resultsTextViewRight?.text = resultAsStringRight
-      //   resultsTextViewLeft?.text = resultAsStringLeft
-
-      var isBadResult = false
-      resultObj.goodResults.forEach {
-        if (resultObj.resultsLeft[it.key] != null) {
-          isBadResult = resultObj.resultsLeft[it.key]!! < it.value
-        }
-      }
-
-      testResult?.text = if (isBadResult) "You have to see specialist" else "Your hear is good"
     }
   }
 

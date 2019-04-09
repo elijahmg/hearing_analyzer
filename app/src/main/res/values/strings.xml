@@ -13,6 +13,11 @@
     <string name="left">Left Channel</string>
     <string name="right">Right Channel</string>
 
+    <string name="saveCalibration">Save Calibration</string>
+    <string name="startCalibration">Start Calibration</string>
+    <string name="finishCalibration">Finish Calibration</string>
+
+
     <string name="info">
         This is a Hear analyzer\n
         Please set volume\n on phone/tablet\n and on external device to max

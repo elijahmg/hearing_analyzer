@@ -1,4 +1,4 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog

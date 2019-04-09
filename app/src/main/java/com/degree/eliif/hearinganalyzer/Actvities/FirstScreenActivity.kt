@@ -1,12 +1,13 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Actvities
 
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.degree.eliif.hearinganalyzer.R
 
 class FirstScreenActivity : AppCompatActivity() {
 
@@ -28,6 +29,16 @@ class FirstScreenActivity : AppCompatActivity() {
     val sharedPreferences = getSharedPreferences("share", Context.MODE_PRIVATE)
     sharedPreferences.edit().clear().apply()
   }
+
+  fun startCalibration(view: View) {
+    val intent = Intent(this, MainActivity::class.java)
+    intent.putExtra("calibration", true)
+    startActivity(intent)
+
+    val sharedPreferences = getSharedPreferences("share", Context.MODE_PRIVATE)
+    sharedPreferences.edit().clear().apply()
+  }
+
 
   fun startResultActivity(view: View) {
     val intent = Intent(this, ResultsActivity::class.java)

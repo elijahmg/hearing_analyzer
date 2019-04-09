@@ -1,29 +1,48 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Actvities
 
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.degree.eliif.hearinganalyzer.Dialogs.VolumeDialog
+import com.degree.eliif.hearinganalyzer.Functionality.PlayWave
+import com.degree.eliif.hearinganalyzer.POJO.Calibration
+import com.degree.eliif.hearinganalyzer.POJO.Result
+import com.degree.eliif.hearinganalyzer.R
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
+  var calibrationPOJO = Calibration()
+
+  val CALIBRATION_FILE = "customCalibration.json"
+
   lateinit var frequencySpinner: Spinner
 
   lateinit var leftProgress: ProgressBar
   lateinit var rightProgress: ProgressBar
+
+  val calibSpl: EditText by lazy { findViewById<EditText>(R.id.calibSpl) }
+  val calibHl: EditText by lazy { findViewById<EditText>(R.id.calibHl) }
+
+  var isCalibration = false as Boolean?
 
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -39,9 +58,84 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+    isCalibration = intent?.extras?.getBoolean("calibration")
+
+    if (isCalibration !== null && isCalibration == true) {
+      this.setVisibility()
+    }
+
     this.initializeSpinner()
+    this.initializeListeners()
   }
 
+  /**
+   * Initialize listeners for buttons
+   */
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  private fun initializeListeners() {
+    val listener = View.OnClickListener { v: View? ->
+      when (v?.id) {
+        R.id.nextFq -> setNextFrequency()
+        R.id.saveCalibrations -> saveCalibration()
+        R.id.finishCalib -> finishCalibration()
+      }
+    }
+
+    nextFq?.setOnClickListener(listener)
+    saveCalibrations?.setOnClickListener(listener)
+    finishCalib?.setOnClickListener(listener)
+  }
+
+  /**
+   * In case of calibration set visiblity of layout
+   */
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  private fun setVisibility() {
+    val calibrationLayout = findViewById<ConstraintLayout>(R.id.calibrationLayout)
+
+    val saveResultButton = findViewById<Button>(R.id.saveResult)
+
+    val finishTestButton = findViewById<Button>(R.id.finishTest)
+
+    calibrationLayout.visibility = View.VISIBLE
+
+    saveResultButton.isEnabled = false
+
+    finishTestButton.isEnabled = false
+
+
+    /** Set listeners for keyboard buttons **/
+    calibSpl.setOnEditorActionListener { v, actionId, event ->
+      return@setOnEditorActionListener when (actionId) {
+        EditorInfo.IME_ACTION_NEXT -> {
+          calibHl.requestFocus()
+        }
+        else -> false
+      }
+    }
+
+    /** Set listeners for keyboard buttons **/
+    calibHl.setOnEditorActionListener { v, actionId, event ->
+      return@setOnEditorActionListener when (actionId) {
+        EditorInfo.IME_ACTION_DONE -> {
+          this.saveCalibration()
+          this.setNextFrequency()
+
+          calibHl.text = null
+          calibSpl.text = null
+
+          calibSpl.requestFocus()
+          Toast.makeText(this, "Keep calibrating", Toast.LENGTH_SHORT).show()
+          true
+        }
+        else -> false
+      }
+    }
+  }
+
+  /**
+   * Initialize spinner
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   private fun initializeSpinner() {
     /** Create frequency spinner **/
@@ -62,9 +156,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     this.setSharedValues()
   }
 
+  /**
+   * Saving shared values in case of pressing home button
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun setSharedValues() {
-    val sharedPref = getSharedPreferences("share", Context.MODE_PRIVATE)?: return
+    val sharedPref = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
     val position = sharedPref.getInt("pos", -1)
     val resultAsString = sharedPref.getString("result", "")
     val side = sharedPref.getBoolean("side", true)
@@ -93,6 +190,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     right.isChecked = !side
   }
 
+  /**
+   * Spinner listener
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
     if (parent?.id == R.id.frequencySpinner) {
@@ -105,8 +205,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
   }
 
+  /**
+   * Set next frequency
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun setNextFrequency(view: View) {
+  fun setNextFrequency() {
     val spinnerLength = frequencySpinner.adapter.count
 
     if (setupWave.currentIndex + 1 > spinnerLength - 1) {
@@ -117,11 +220,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       frequencySpinner.setSelection(setupWave.currentIndex)
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
 
-      setupWave.resetLevel()
+      if (!isCalibration!!) {
+        setupWave.resetLevel()
+      }
+
       setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
 
+
+  /**
+   * Set previous frequency
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun setPreviousFrequency(view: View) {
     if (setupWave.currentIndex - 1 < 0) {
@@ -132,11 +242,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       frequencySpinner.setSelection(setupWave.currentIndex)
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
 
-      setupWave.resetLevel()
+      if (!isCalibration!!) {
+        setupWave.resetLevel()
+      }
+
       setupWave.setFrequency(frequency.toString().toDouble())
     }
   }
 
+  /**
+   * On radio button listener
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onRadioButtonClicked(view: View) {
     if (view is RadioButton) {
@@ -164,6 +280,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 
+  /**
+   * On play listener
+   * @todo rename
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun onClick(view: View) {
     textView!!.text = setupWave.getLevelDb()
@@ -176,26 +296,34 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
   }
 
+  /**
+   * Set reduce volume
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
     textView!!.text = setupWave.getLevelDb()
   }
 
+  /**
+   * Set increase volume
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
     textView!!.text = setupWave.getLevelDb()
   }
 
+  /**
+   * Save measurement result
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun save(view: View) {
     setupWave.saveResult()
-    Log.d("size", setupWave.getResult().resultsLeft.size.toString())
 
     when (setupWave.LEFT_CHANNEL) {
       true -> {
-       leftProgress.progress = setupWave.getResult().resultsLeft.size
+        leftProgress.progress = setupWave.getResult().resultsLeft.size
       }
 
       false -> {
@@ -205,9 +333,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     Toast.makeText(this, "Results have been saved", Toast.LENGTH_SHORT).show()
 
-    this.setNextFrequency(view)
+    this.setNextFrequency()
   }
 
+  /**
+   * Open result activity
+   */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun openResultActivity(view: View) {
     val resultIntent = Intent(this, ResultsActivity::class.java)
@@ -215,7 +346,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     startActivity(resultIntent)
 
 
-    val sharedRef = getSharedPreferences("share",Context.MODE_PRIVATE) ?: return
+    val sharedRef = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
     val gson = Gson()
     val objAsString = gson.toJson(setupWave.getResult())
 
@@ -227,13 +358,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
   }
 
+  /**
+   * Volume key liestener
+   */
   override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
     if (event?.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
       || event?.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
       val dialog = VolumeDialog()
       dialog.show(supportFragmentManager, "volume")
 
-      val manager =  getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      val manager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
       val maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
       manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
     }
@@ -241,15 +375,73 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     return false
   }
 
-  //  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-//  fun precisionLess(view: View) {
-//    setupWave.precisionLess()
-//    textView!!.text = setupWave.getLevelDb()
-//  }
-//
-//  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-//  fun precisionMore(view: View) {
-//    setupWave.precisionMore()
-//    textView!!.text = setupWave.getLevelDb()
-//  }
+  /**
+   * Save calibration listener
+   */
+  private fun saveCalibration() {
+
+    val left = setupWave.LEFT_CHANNEL
+    val frequency = setupWave.FREQUENCY
+
+    val dbSPL = calibSpl.text
+    val dbHl = calibHl.text
+
+    when (left) {
+      true -> {
+        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toLong()
+        leftProgress.progress = calibrationPOJO.calibrationLeft.size
+      }
+
+      false -> {
+        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toLong()
+        rightProgress.progress = calibrationPOJO.calibrationRight.size
+      }
+    }
+
+    calibrationPOJO.dbHl[frequency] = dbHl.toString().toLong()
+  }
+
+  /**
+   * Finish calibration listener
+   */
+  private fun finishCalibration() {
+    val leftFile: FileOutputStream = openFileOutput(CALIBRATION_FILE, Context.MODE_PRIVATE)
+
+    try {
+      val gson = Gson()
+      val resultAsString = gson.toJson(calibrationPOJO)
+
+      leftFile.write(resultAsString.toByteArray())
+
+      Toast.makeText(this, "File has been saved$filesDir", Toast.LENGTH_SHORT).show()
+    } catch (e: FileNotFoundException) {
+      e.printStackTrace()
+    } catch (e: IOException) {
+      e.printStackTrace()
+    }
+
+    leftFile.close()
+  }
+
+  /**
+   * Reading default calibration from assets
+   */
+  fun readingDefaultCalibration() {
+    try {
+      val file = assets.open("calibration.json")
+
+      val leftStream = InputStreamReader(file)
+
+      val resultsString = leftStream.buffered().use { it.readText() }
+
+      val gson = Gson()
+
+      val result = gson.fromJson(resultsString, Calibration::class.java)
+
+      // @todo
+    } catch (e: Exception) {
+      e.printStackTrace()
+      Toast.makeText(this, "Reading default calibration failed", Toast.LENGTH_SHORT).show()
+    }
+  }
 }

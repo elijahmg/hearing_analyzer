@@ -1,9 +1,13 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Functionality
 
 import android.annotation.TargetApi
-import android.media.*
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioTrack
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.degree.eliif.hearinganalyzer.POJO.Result
 import kotlin.concurrent.thread
 
 @TargetApi(Build.VERSION_CODES.M)
@@ -17,7 +21,7 @@ class PlayWave {
     AudioFormat.ENCODING_PCM_16BIT
   )
 
-  private var FREQUENCY: Double = 400.0
+  var FREQUENCY: Double = 400.0
 
   private var LEVEL: Double = 327.67
 
