@@ -6,6 +6,7 @@ import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -60,6 +61,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     isCalibration = intent?.extras?.getBoolean("calibration")
 
+    val isDefaultCalibration = intent?.extras?.getBoolean("defaultCalibration")
+
+    if (isDefaultCalibration !== null && isDefaultCalibration == true) {
+      this.loadDefaultCalibration()
+    }
+
+
     if (isCalibration !== null && isCalibration == true) {
       this.setVisibility()
     }
@@ -78,12 +86,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         R.id.nextFq -> setNextFrequency()
         R.id.saveCalibrations -> saveCalibration()
         R.id.finishCalib -> finishCalibration()
+        R.id.finishTest -> openResultActivity()
       }
     }
 
     nextFq?.setOnClickListener(listener)
     saveCalibrations?.setOnClickListener(listener)
     finishCalib?.setOnClickListener(listener)
+    finishTest?.setOnClickListener(listener)
   }
 
   /**
@@ -337,28 +347,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   /**
-   * Open result activity
-   */
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun openResultActivity(view: View) {
-    val resultIntent = Intent(this, ResultsActivity::class.java)
-    resultIntent.putExtra("results", setupWave.getResult())
-    startActivity(resultIntent)
-
-
-    val sharedRef = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
-    val gson = Gson()
-    val objAsString = gson.toJson(setupWave.getResult())
-
-    with(sharedRef.edit()) {
-      putInt("pos", setupWave.currentIndex)
-      putString("result", objAsString)
-      putBoolean("side", setupWave.LEFT_CHANNEL)
-      apply()
-    }
-  }
-
-  /**
    * Volume key liestener
    */
   override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
@@ -386,32 +374,34 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     val dbSPL = calibSpl.text
     val dbHl = calibHl.text
 
+    val levelInFloat = setupWave.LEVEL
+
     when (left) {
       true -> {
-        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toLong()
+        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toDouble()
         leftProgress.progress = calibrationPOJO.calibrationLeft.size
       }
 
       false -> {
-        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toLong()
+        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toDouble()
         rightProgress.progress = calibrationPOJO.calibrationRight.size
       }
     }
-
-    calibrationPOJO.dbHl[frequency] = dbHl.toString().toLong()
+    calibrationPOJO.measuringLevel = levelInFloat
+    calibrationPOJO.dbHl[frequency] = dbHl.toString().toDouble()
   }
 
   /**
    * Finish calibration listener
    */
   private fun finishCalibration() {
-    val leftFile: FileOutputStream = openFileOutput(CALIBRATION_FILE, Context.MODE_PRIVATE)
+    val file: FileOutputStream = openFileOutput(CALIBRATION_FILE, Context.MODE_PRIVATE)
 
     try {
       val gson = Gson()
       val resultAsString = gson.toJson(calibrationPOJO)
 
-      leftFile.write(resultAsString.toByteArray())
+      file.write(resultAsString.toByteArray())
 
       Toast.makeText(this, "File has been saved$filesDir", Toast.LENGTH_SHORT).show()
     } catch (e: FileNotFoundException) {
@@ -420,13 +410,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       e.printStackTrace()
     }
 
-    leftFile.close()
+    file.close()
   }
 
   /**
-   * Reading default calibration from assets
+   * Load default calibration from assets
    */
-  fun readingDefaultCalibration() {
+  private fun loadDefaultCalibration() {
     try {
       val file = assets.open("calibration.json")
 
@@ -436,12 +426,36 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
       val gson = Gson()
 
-      val result = gson.fromJson(resultsString, Calibration::class.java)
+      calibrationPOJO = gson.fromJson(resultsString, Calibration::class.java)
 
-      // @todo
+      Log.d("assets", calibrationPOJO.toString())
+
+      Toast.makeText(this, "Default calibration has been loaded", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
       e.printStackTrace()
       Toast.makeText(this, "Reading default calibration failed", Toast.LENGTH_SHORT).show()
+    }
+  }
+
+  /**
+   * Open result activity
+   */
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun openResultActivity() {
+    val resultIntent = Intent(this, ResultsActivity::class.java)
+    resultIntent.putExtra("results", setupWave.getResult())
+    startActivity(resultIntent)
+
+
+    val sharedRef = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
+    val gson = Gson()
+    val objAsString = gson.toJson(setupWave.getResult())
+
+    with(sharedRef.edit()) {
+      putInt("pos", setupWave.currentIndex)
+      putString("result", objAsString)
+      putBoolean("side", setupWave.LEFT_CHANNEL)
+      apply()
     }
   }
 }

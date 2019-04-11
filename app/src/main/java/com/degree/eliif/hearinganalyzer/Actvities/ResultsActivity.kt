@@ -1,7 +1,6 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
 import com.google.gson.Gson
-import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.view.LineChartView
 import java.io.*
 
@@ -29,48 +27,13 @@ class ResultsActivity : AppCompatActivity() {
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-    chart = findViewById(R.id.chart)
-
-    val xAxisValues = mutableListOf<AxisValue>()
-    val yAxisValues = mutableListOf<PointValue>()
-
-    val line = Line(yAxisValues).setColor(Color.BLACK)
-
-    for (i in 0 until axisData.size) {
-      xAxisValues.add(i, AxisValue(i.toFloat()).setLabel(axisData[i].toString()))
-    }
-
-    for (i in 0 until yAxisData.size) {
-      yAxisValues.add(i, PointValue(i.toFloat(), yAxisData[i].toFloat()))
-    }
-
-    val lineChart = LineChartData()
-
-    val lines: MutableList<Line> = mutableListOf()
-
-    lines.add(line)
-
-    lineChart.lines = lines
-
-
-    val xAxis = Axis()
-    xAxis.name = "Freq"
-    lineChart.axisXTop = xAxis
-
-    val xYxis = Axis()
-    xYxis.name = "Db"
-    lineChart.axisYLeft = xYxis
-
-
-    chart.lineChartData = lineChart
-
-
     val isLoadAllow = intent?.extras?.get("loadLast")
 
     if (isLoadAllow != null) {
       this.load()
     } else {
       resultObj = intent?.extras?.getSerializable("results") as Result
+
       var resultAsStringLeft = ""
       var resultAsStringRight = ""
 
@@ -121,7 +84,6 @@ class ResultsActivity : AppCompatActivity() {
 
     val result = gson.fromJson(resultsString, Result::class.java)
 
-
     var resultAsStringLeft = ""
     var resultAsStringRight = ""
 
@@ -134,3 +96,40 @@ class ResultsActivity : AppCompatActivity() {
     leftFile.close()
   }
 }
+
+//
+//chart = findViewById(R.id.chart)
+//
+//val xAxisValues = mutableListOf<AxisValue>()
+//val yAxisValues = mutableListOf<PointValue>()
+//
+//val line = Line(yAxisValues).setColor(Color.BLACK)
+//
+//for (i in 0 until axisData.size) {
+//  xAxisValues.add(i, AxisValue(i.toFloat()).setLabel(axisData[i].toString()))
+//}
+//
+//for (i in 0 until yAxisData.size) {
+//  yAxisValues.add(i, PointValue(i.toFloat(), yAxisData[i].toFloat()))
+//}
+//
+//val lineChart = LineChartData()
+//
+//val lines: MutableList<Line> = mutableListOf()
+//
+//lines.add(line)
+//
+//lineChart.lines = lines
+//
+//
+//val xAxis = Axis()
+//xAxis.name = "Freq"
+//lineChart.axisXTop = xAxis
+//
+//val xYxis = Axis()
+//xYxis.name = "Db"
+//lineChart.axisYLeft = xYxis
+//
+//
+//chart.lineChartData = lineChart
+//

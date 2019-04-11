@@ -23,7 +23,7 @@ class PlayWave {
 
   var FREQUENCY: Double = 400.0
 
-  private var LEVEL: Double = 327.67
+  var LEVEL: Double = 327.67
 
   private var MUTE: Boolean = false
 
@@ -31,8 +31,8 @@ class PlayWave {
 
   var LEFT_CHANNEL = true
 
-  private var koef = Math.pow(10.0, 0.25) // 5dB
-  private var koefOne = Math.pow(10.0, 0.05) // 1dB
+  private var koef = (Math.pow(10.0, 0.25)).toFloat() // 5dB
+  private var koefOne = (Math.pow(10.0, 0.05)).toFloat() // 1dB
 
   var currentIndex: Int = 0
 
