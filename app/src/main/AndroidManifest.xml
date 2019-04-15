@@ -29,6 +29,7 @@
         </activity>
         <activity
             android:name=".Actvities.ResultsActivity"
+            android:screenOrientation="landscape"
             android:parentActivityName=".Actvities.MainActivity" />
     </application>
 

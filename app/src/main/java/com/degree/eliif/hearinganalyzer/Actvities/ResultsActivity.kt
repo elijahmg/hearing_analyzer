@@ -1,15 +1,19 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_results.*
-import lecho.lib.hellocharts.view.LineChartView
 import java.io.*
 
 class ResultsActivity : AppCompatActivity() {
@@ -17,7 +21,7 @@ class ResultsActivity : AppCompatActivity() {
   private lateinit var resultObj: Result
   private var RESULT_FILE = "result.json"
 
-  private lateinit var chart: LineChartView
+  private lateinit var lineChart: LineChart
 
   private var axisData: MutableList<Int> = mutableListOf(3, 6, 7, 9, 7)
   private var yAxisData: MutableList<Int> = mutableListOf(5, 6, 7, 9, 7)
@@ -40,10 +44,48 @@ class ResultsActivity : AppCompatActivity() {
 
       resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
       resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
-
-      resultsTextViewLeft.text = resultAsStringLeft
-      resultsTextViewRight.text = resultAsStringRight
     }
+    this.initializeChart()
+  }
+
+  private fun initializeChart() {
+    lineChart = findViewById(R.id.lineChart)
+
+    val rightResultsChart = mutableListOf<Entry>()
+    val leftResultsChart = mutableListOf<Entry>()
+
+    resultObj.resultsLeft.map { (k, v) -> leftResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
+    resultObj.resultsRight.map { (k, v) -> rightResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
+
+    val leftSet = LineDataSet(leftResultsChart, "Left ear")
+    leftSet.color = Color.BLUE
+    leftSet.fillAlpha = 110
+
+    val rightSet = LineDataSet(rightResultsChart, "Right ear")
+    rightSet.color = Color.RED
+    rightSet.fillAlpha = 110
+
+
+    val dataSets = mutableListOf<ILineDataSet>()
+    dataSets.add(leftSet)
+    dataSets.add(rightSet)
+
+    val lineData = LineData(dataSets)
+
+    val yAxis = lineChart.axisLeft
+
+    lineChart.axisLeft.isInverted = true
+    lineChart.axisRight.isEnabled = false
+
+    lineChart.xAxis.axisMinimum = 20F
+    lineChart.xAxis.axisMaximum = 18000F
+
+    lineChart.axisLeft.axisMinimum = -5F
+    lineChart.axisLeft.axisMaximum = 100F
+
+    lineChart.description = null
+
+    lineChart.data = lineData
   }
 
 
@@ -85,16 +127,14 @@ class ResultsActivity : AppCompatActivity() {
 
     val gson = Gson()
 
-    val result = gson.fromJson(resultsString, Result::class.java)
+    resultObj = gson.fromJson(resultsString, Result::class.java)
 
     var resultAsStringLeft = ""
     var resultAsStringRight = ""
 
-    result.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
-    result.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+    resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+    resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-    resultsTextViewRight?.text = resultAsStringRight
-    resultsTextViewLeft?.text = resultAsStringLeft
 
     leftFile.close()
   }
