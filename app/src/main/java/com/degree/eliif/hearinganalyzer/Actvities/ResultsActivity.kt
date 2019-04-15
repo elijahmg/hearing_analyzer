@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_results.*
 import lecho.lib.hellocharts.view.LineChartView
 import java.io.*
 
@@ -37,9 +38,11 @@ class ResultsActivity : AppCompatActivity() {
       var resultAsStringLeft = ""
       var resultAsStringRight = ""
 
-      resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
-      resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
+      resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
+      resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
 
+      resultsTextViewLeft.text = resultAsStringLeft
+      resultsTextViewRight.text = resultAsStringRight
     }
   }
 
@@ -90,8 +93,8 @@ class ResultsActivity : AppCompatActivity() {
     result.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
     result.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
 
-    // resultsTextViewRight?.text = resultAsStringRight
-    // resultsTextViewLeft?.text = resultAsStringLeft
+    resultsTextViewRight?.text = resultAsStringRight
+    resultsTextViewLeft?.text = resultAsStringLeft
 
     leftFile.close()
   }

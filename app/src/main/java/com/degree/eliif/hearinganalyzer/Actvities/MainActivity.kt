@@ -1,12 +1,12 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.degree.eliif.hearinganalyzer.Dialogs.VolumeDialog
+import com.degree.eliif.hearinganalyzer.Functionality.Computate
 import com.degree.eliif.hearinganalyzer.Functionality.PlayWave
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
 import com.degree.eliif.hearinganalyzer.POJO.Result
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   val calibHl: EditText by lazy { findViewById<EditText>(R.id.calibHl) }
 
   var isCalibration = false as Boolean?
+  var isDefaultCalibration = true as Boolean?
 
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     isCalibration = intent?.extras?.getBoolean("calibration")
 
-    val isDefaultCalibration = intent?.extras?.getBoolean("defaultCalibration")
+    isDefaultCalibration = intent?.extras?.getBoolean("defaultCalibration")
 
     if (isDefaultCalibration !== null && isDefaultCalibration == true) {
       this.loadDefaultCalibration()
@@ -87,6 +89,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         R.id.saveCalibrations -> saveCalibration()
         R.id.finishCalib -> finishCalibration()
         R.id.finishTest -> openResultActivity()
+        R.id.play -> playSignal()
       }
     }
 
@@ -94,6 +97,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     saveCalibrations?.setOnClickListener(listener)
     finishCalib?.setOnClickListener(listener)
     finishTest?.setOnClickListener(listener)
+    play?.setOnClickListener(listener)
   }
 
   /**
@@ -176,12 +180,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     val resultAsString = sharedPref.getString("result", "")
     val side = sharedPref.getBoolean("side", true)
 
+    isDefaultCalibration = sharedPref.getBoolean("isDefaultCalibration", true)
+    isCalibration = sharedPref.getBoolean("isDefaultCalibration", false)
+
+    if (isDefaultCalibration !== null && isDefaultCalibration == true) {
+      this.loadDefaultCalibration()
+    }
+
     /** Setting frequency **/
     if (position != -1) {
       frequencySpinner.setSelection(position)
       val frequency = frequencySpinner.getItemAtPosition(position)
 
-      setupWave.resetLevel()
+      this.resetLevel()
       setupWave.setFrequency(frequency.toString().toDouble())
     }
 
@@ -203,16 +214,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   /**
    * Spinner listener
    */
+  @SuppressLint("SetTextI18n")
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
     if (parent?.id == R.id.frequencySpinner) {
-      val frequency = parent.getItemAtPosition(pos)
-
       setupWave.currentIndex = pos
-      setupWave.resetLevel()
-      textView!!.text = setupWave.getLevelDb()
-      setupWave.setFrequency(frequency.toString().toDouble())
+      this.resetLevel()
+
+      textView!!.text = setupWave.getDbHl()
     }
+  }
+
+  fun resetLevel() {
+    val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
+    val frequencyHz = frequency.toString().toDouble()
+    val levelInFloat = Computate(calibrationPOJO).getFloatLevelForNullSpl(frequencyHz, setupWave.LEFT_CHANNEL)
+
+    setupWave.NULL_LEVEL = levelInFloat!!
+    setupWave.LEVEL = levelInFloat
   }
 
   /**
@@ -268,9 +287,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     if (view is RadioButton) {
       val checked = view.isChecked
 
-      setupWave.resetLevel()
       frequencySpinner.setSelection(0)
-      textView!!.text = setupWave.getLevelDb()
+      textView!!.text = setupWave.getDbHl()
 
       when (view.id) {
         R.id.left ->
@@ -283,6 +301,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
           }
         }
       }
+      this.resetLevel()
     }
   }
 
@@ -292,11 +311,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   /**
    * On play listener
-   * @todo rename
    */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-  fun onClick(view: View) {
-    textView!!.text = setupWave.getLevelDb()
+  fun playSignal() {
+    textView!!.text = setupWave.getDbHl()
     thread {
       setupWave.setWave()
       Thread.sleep(750)
@@ -312,7 +330,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
-    textView!!.text = setupWave.getLevelDb()
+    textView!!.text = setupWave.getDbHl()
   }
 
   /**
@@ -321,7 +339,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
-    textView!!.text = setupWave.getLevelDb()
+    textView!!.text = setupWave.getDbHl()
   }
 
   /**
@@ -347,7 +365,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   /**
-   * Volume key liestener
+   * Volume key listener
    */
   override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
     if (event?.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
@@ -428,8 +446,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
       calibrationPOJO = gson.fromJson(resultsString, Calibration::class.java)
 
-      Log.d("assets", calibrationPOJO.toString())
-
       Toast.makeText(this, "Default calibration has been loaded", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
       e.printStackTrace()
@@ -455,6 +471,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       putInt("pos", setupWave.currentIndex)
       putString("result", objAsString)
       putBoolean("side", setupWave.LEFT_CHANNEL)
+      putBoolean("isDefaultCalibration", isDefaultCalibration!!)
+      putBoolean("isCalibration", isCalibration!!)
       apply()
     }
   }

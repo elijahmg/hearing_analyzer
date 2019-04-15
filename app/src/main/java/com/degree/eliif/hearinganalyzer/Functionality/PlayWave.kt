@@ -25,13 +25,15 @@ class PlayWave {
 
   var LEVEL: Double = 327.67
 
+  var NULL_LEVEL: Double = 0.0
+
   private var MUTE: Boolean = false
 
   private var isPlaying = true
 
   var LEFT_CHANNEL = true
 
-  private var koef = (Math.pow(10.0, 0.25)).toFloat() // 5dB
+  private var koef = (Math.pow(10.0, 0.5)).toFloat() // 10 db HL
   private var koefOne = (Math.pow(10.0, 0.05)).toFloat() // 1dB
 
   var currentIndex: Int = 0
@@ -203,11 +205,15 @@ class PlayWave {
    * Save result to result object
    */
   fun saveResult() {
-    val level = Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE))
+    val level = Math.round(20 * Math.log10(LEVEL / NULL_LEVEL))
     if (LEFT_CHANNEL) {
       result.resultsLeft[FREQUENCY] = level
     } else {
       result.resultsRight[FREQUENCY] = level
     }
+  }
+
+  fun getDbHl(): String {
+    return Math.round(20 * Math.log10(LEVEL / NULL_LEVEL)).toString() + "dB HL"
   }
 }
