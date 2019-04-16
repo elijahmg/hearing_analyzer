@@ -64,14 +64,6 @@ class PlayWave {
   }
 
   /**
-   * Set frequency
-   * @param {Double} frequency
-   */
-  fun setFrequency(frequency: Double) {
-    FREQUENCY = frequency
-  }
-
-  /**
    * Reduce by 2db
    */
   fun precisionLess() {

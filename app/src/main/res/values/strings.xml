@@ -26,6 +26,7 @@
     <string name="start">Start test</string>
     <string name="result">Finish test and see results</string>
     <string name="frequencies">Frequencies</string>
+    <string name="dbHl">db HL</string>
     <string name="amplitude">Amplitude</string>
 
     <string name="results">Results</string>
@@ -33,7 +34,7 @@
     <string name="rightEar">Right ear</string>
 
     <string name="saveToFile">Save to file</string>
-    <string name="loadToFile">Load to file</string>
+    <string name="loadFromFile">Load from file</string>
 
     <string name="loadLastResult">Load last results</string>
 

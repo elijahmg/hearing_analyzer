@@ -1,8 +1,10 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,12 +14,14 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_results.*
 import java.io.*
 
-class ResultsActivity : AppCompatActivity() {
-
+class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
   private lateinit var resultObj: Result
   private var RESULT_FILE = "result.json"
 
@@ -44,8 +48,9 @@ class ResultsActivity : AppCompatActivity() {
 
       resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
       resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
+
+      this.initializeChart()
     }
-    this.initializeChart()
   }
 
   private fun initializeChart() {
@@ -56,15 +61,17 @@ class ResultsActivity : AppCompatActivity() {
 
     resultObj.resultsLeft.map { (k, v) -> leftResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
     resultObj.resultsRight.map { (k, v) -> rightResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
+    Log.d("shir", resultObj.resultsLeft.toString())
 
     val leftSet = LineDataSet(leftResultsChart, "Left ear")
     leftSet.color = Color.BLUE
     leftSet.fillAlpha = 110
+    leftSet.valueTextSize = 10f
 
     val rightSet = LineDataSet(rightResultsChart, "Right ear")
     rightSet.color = Color.RED
     rightSet.fillAlpha = 110
-
+    leftSet.valueTextSize = 10f
 
     val dataSets = mutableListOf<ILineDataSet>()
     dataSets.add(leftSet)
@@ -72,22 +79,37 @@ class ResultsActivity : AppCompatActivity() {
 
     val lineData = LineData(dataSets)
 
-    val yAxis = lineChart.axisLeft
-
     lineChart.axisLeft.isInverted = true
     lineChart.axisRight.isEnabled = false
 
-    lineChart.xAxis.axisMinimum = 20F
-    lineChart.xAxis.axisMaximum = 18000F
+    lineChart.xAxis.axisMinimum = 100F
+    lineChart.xAxis.axisMaximum = 17000F
+
+    lineChart.xAxis.labelCount = resultObj.resultsLeft.size
+
+    // lineChart.xAxis.isGranularityEnabled = true
+    //lineChart.xAxis.granularity = 1F
 
     lineChart.axisLeft.axisMinimum = -5F
-    lineChart.axisLeft.axisMaximum = 100F
+    lineChart.axisLeft.axisMaximum = 150F
 
     lineChart.description = null
 
+    lineChart.setOnChartValueSelectedListener(this)
     lineChart.data = lineData
   }
 
+  @SuppressLint("SetTextI18n")
+  override fun onValueSelected(e: Entry?, h: Highlight?) {
+    fq.text = e?.x.toString() + "Hz"
+    dbHL.text = e?.y.toString() + "dB HL"
+  }
+
+  @SuppressLint("SetTextI18n")
+  override fun onNothingSelected() {
+    fq.text = "Hz"
+    dbHL.text = "dB HL"
+  }
 
   /**
    * Save to external doc
@@ -137,42 +159,7 @@ class ResultsActivity : AppCompatActivity() {
 
 
     leftFile.close()
+
+    this.initializeChart()
   }
 }
-
-//
-//chart = findViewById(R.id.chart)
-//
-//val xAxisValues = mutableListOf<AxisValue>()
-//val yAxisValues = mutableListOf<PointValue>()
-//
-//val line = Line(yAxisValues).setColor(Color.BLACK)
-//
-//for (i in 0 until axisData.size) {
-//  xAxisValues.add(i, AxisValue(i.toFloat()).setLabel(axisData[i].toString()))
-//}
-//
-//for (i in 0 until yAxisData.size) {
-//  yAxisValues.add(i, PointValue(i.toFloat(), yAxisData[i].toFloat()))
-//}
-//
-//val lineChart = LineChartData()
-//
-//val lines: MutableList<Line> = mutableListOf()
-//
-//lines.add(line)
-//
-//lineChart.lines = lines
-//
-//
-//val xAxis = Axis()
-//xAxis.name = "Freq"
-//lineChart.axisXTop = xAxis
-//
-//val xYxis = Axis()
-//xYxis.name = "Db"
-//lineChart.axisYLeft = xYxis
-//
-//
-//chart.lineChartData = lineChart
-//

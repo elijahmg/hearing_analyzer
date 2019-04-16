@@ -1,6 +1,5 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -176,7 +175,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun setSharedValues() {
     val sharedPref = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
-    val position = sharedPref.getInt("pos", -1)
+    val position = sharedPref.getInt("pos", 0)
     val resultAsString = sharedPref.getString("result", "")
     val side = sharedPref.getBoolean("side", true)
 
@@ -193,7 +192,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       val frequency = frequencySpinner.getItemAtPosition(position)
 
       this.resetLevel()
-      setupWave.setFrequency(frequency.toString().toDouble())
+      setupWave.FREQUENCY = frequency.toString().toDouble()
     }
 
     /** Setting object **/
@@ -214,11 +213,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   /**
    * Spinner listener
    */
-  @SuppressLint("SetTextI18n")
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
     if (parent?.id == R.id.frequencySpinner) {
       setupWave.currentIndex = pos
+      setupWave.FREQUENCY = frequencySpinner.getItemAtPosition(pos).toString().toDouble()
       this.resetLevel()
 
       textView!!.text = setupWave.getDbHl()
@@ -253,7 +252,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         setupWave.resetLevel()
       }
 
-      setupWave.setFrequency(frequency.toString().toDouble())
+      setupWave.FREQUENCY = frequency.toString().toDouble()
     }
   }
 
@@ -275,7 +274,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         setupWave.resetLevel()
       }
 
-      setupWave.setFrequency(frequency.toString().toDouble())
+      setupWave.FREQUENCY = frequency.toString().toDouble()
     }
   }
 
