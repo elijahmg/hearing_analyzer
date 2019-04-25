@@ -64,10 +64,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     isDefaultCalibration = intent?.extras?.getBoolean("defaultCalibration")
 
-    if (isDefaultCalibration !== null && isDefaultCalibration == true) {
+    if (isDefaultCalibration == true) {
       this.loadDefaultCalibration()
     }
-
 
     if (isCalibration !== null && isCalibration == true) {
       this.setVisibility()
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   /**
-   * In case of calibration set visiblity of layout
+   * In case of calibration set visibility of layout
    */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   private fun setVisibility() {
@@ -111,6 +110,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     val finishTestButton = findViewById<Button>(R.id.finishTest)
 
     calibrationLayout.visibility = View.VISIBLE
+
+    textView.visibility = View.INVISIBLE
+
+    lessVolume.isEnabled = false
+    moreVolume.isEnabled = false
 
     saveResultButton.isEnabled = false
 
@@ -163,7 +167,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     frequencySpinner.onItemSelectedListener = this
-    textView!!.text = setupWave.getLevelDb()
 
     /** Restore activity state **/
     this.setSharedValues()
@@ -175,14 +178,20 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun setSharedValues() {
     val sharedPref = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
+    val wasSet = sharedPref.getBoolean("wasSet", false)
+
+    if (!wasSet) {
+      return
+    }
+
     val position = sharedPref.getInt("pos", 0)
     val resultAsString = sharedPref.getString("result", "")
     val side = sharedPref.getBoolean("side", true)
 
     isDefaultCalibration = sharedPref.getBoolean("isDefaultCalibration", true)
-    isCalibration = sharedPref.getBoolean("isDefaultCalibration", false)
+    isCalibration = sharedPref.getBoolean("isCalibration", false)
 
-    if (isDefaultCalibration !== null && isDefaultCalibration == true) {
+    if (isDefaultCalibration == true) {
       this.loadDefaultCalibration()
     }
 
@@ -202,6 +211,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
       setupWave.setResult(resultAsObject)
     }
+
+    leftProgress.progress = sharedPref.getInt("leftProgress", 0)
+    rightProgress.progress = sharedPref.getInt("rightProgress", 0)
 
     val left = findViewById<RadioButton>(R.id.left)
     val right = findViewById<RadioButton>(R.id.right)
@@ -225,12 +237,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   fun resetLevel() {
-    val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
-    val frequencyHz = frequency.toString().toDouble()
-    val levelInFloat = Computate(calibrationPOJO).getFloatLevelForNullSpl(frequencyHz, setupWave.LEFT_CHANNEL)
+    if (isCalibration !== null && isCalibration == true) {
+      setupWave.LEVEL = 1036.0 // set at -30 dB
+    } else {
+      val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
+      val frequencyHz = frequency.toString().toDouble()
+      val levelInFloat = Computate(calibrationPOJO).getFloatLevelForNullSpl(frequencyHz, setupWave.LEFT_CHANNEL)
 
-    setupWave.NULL_LEVEL = levelInFloat!!
-    setupWave.LEVEL = levelInFloat
+      setupWave.NULL_LEVEL = levelInFloat!!
+      setupWave.LEVEL = levelInFloat * 100 // set at 40 dB HL
+    }
   }
 
   /**
@@ -248,14 +264,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       frequencySpinner.setSelection(setupWave.currentIndex)
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
 
-      if (!isCalibration!!) {
-        setupWave.resetLevel()
-      }
-
       setupWave.FREQUENCY = frequency.toString().toDouble()
     }
   }
-
 
   /**
    * Set previous frequency
@@ -269,10 +280,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
       frequencySpinner.setSelection(setupWave.currentIndex)
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
-
-      if (!isCalibration!!) {
-        setupWave.resetLevel()
-      }
 
       setupWave.FREQUENCY = frequency.toString().toDouble()
     }
@@ -472,6 +479,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       putBoolean("side", setupWave.LEFT_CHANNEL)
       putBoolean("isDefaultCalibration", isDefaultCalibration!!)
       putBoolean("isCalibration", isCalibration!!)
+      putInt("leftProgress", setupWave.getResult().resultsLeft.size)
+      putInt("rightProgress", setupWave.getResult().resultsRight.size)
+      putBoolean("wasSet", true)
       apply()
     }
   }

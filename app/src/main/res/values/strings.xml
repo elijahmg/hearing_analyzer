@@ -3,8 +3,8 @@
 
     <string name="play">Play</string>
     <string name="stop">Stop</string>
-    <string name="iCanHear">-5 dB</string>
-    <string name="iCannotHear">+ 5dB</string>
+    <string name="iCanHear">-10 dB HL</string>
+    <string name="iCannotHear">+10 dB HL</string>
 
     <string name="nextFrq">Next Frequency</string>
     <string name="previousFrq">Previous Frequency</string>

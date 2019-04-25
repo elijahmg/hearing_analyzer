@@ -34,7 +34,6 @@ class PlayWave {
   var LEFT_CHANNEL = true
 
   private var koef = (Math.pow(10.0, 0.5)).toFloat() // 10 db HL
-  private var koefOne = (Math.pow(10.0, 0.05)).toFloat() // 1dB
 
   var currentIndex: Int = 0
 
@@ -61,20 +60,6 @@ class PlayWave {
 
   fun setResult(result: Result) {
     this.result = result
-  }
-
-  /**
-   * Reduce by 2db
-   */
-  fun precisionLess() {
-    LEVEL /= koefOne
-  }
-
-  /**
-   * Increase by 2db
-   */
-  fun precisionMore() {
-    LEVEL *= koefOne
   }
 
   /**

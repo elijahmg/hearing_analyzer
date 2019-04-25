@@ -1,23 +1,30 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.degree.eliif.hearinganalyzer.Dialogs.CalibrationDialog
+import com.degree.eliif.hearinganalyzer.POJO.Calibration
 import com.degree.eliif.hearinganalyzer.R
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.first_screen.*
 import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.InputStreamReader
 
 class FirstScreenActivity : AppCompatActivity(), CalibrationDialog.CalibrationDialogListener {
 
   val CALIBRATION_FILE = "customCalibration.json"
+
+  var calibrationPOJO = Calibration()
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +66,7 @@ class FirstScreenActivity : AppCompatActivity(), CalibrationDialog.CalibrationDi
   fun startCalibration(view: View) {
     val intent = Intent(this, MainActivity::class.java)
     intent.putExtra("calibration", true)
+    intent.putExtra("defaultCalibration", false)
     startActivity(intent)
 
     val sharedPreferences = getSharedPreferences("share", Context.MODE_PRIVATE)
@@ -80,6 +88,7 @@ class FirstScreenActivity : AppCompatActivity(), CalibrationDialog.CalibrationDi
 
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun setChoice(choice: Boolean) {
+
     if (choice) {
       this.startTestActivity(true)
     } else {
@@ -92,9 +101,29 @@ class FirstScreenActivity : AppCompatActivity(), CalibrationDialog.CalibrationDi
   /**
    * Check if file exists
    */
+  @TargetApi(Build.VERSION_CODES.N)
   private fun ifCustomExists(): Boolean {
     try {
       val file: FileInputStream = openFileInput(CALIBRATION_FILE)
+
+      val leftStream = InputStreamReader(file)
+
+      val resultsString = leftStream.buffered().use { it.readText() }
+
+      val gson = Gson()
+
+      calibrationPOJO = gson.fromJson(resultsString, Calibration::class.java)
+
+      if (calibrationPOJO.calibrationLeft.size < 16) {
+        Toast.makeText(this,"Custom calibration is not containing all values", Toast.LENGTH_SHORT).show()
+        return false
+      }
+
+      if (calibrationPOJO.calibrationRight.size < 16) {
+        Toast.makeText(this,"Custom calibration is not containing all values", Toast.LENGTH_SHORT).show()
+        return false
+      }
+
     } catch (e: FileNotFoundException) {
       Toast.makeText(this,"Custom file wasn't found", Toast.LENGTH_SHORT).show()
       return false

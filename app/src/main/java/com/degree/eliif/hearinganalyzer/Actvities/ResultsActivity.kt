@@ -61,7 +61,6 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     resultObj.resultsLeft.map { (k, v) -> leftResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
     resultObj.resultsRight.map { (k, v) -> rightResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
-    Log.d("shir", resultObj.resultsLeft.toString())
 
     val leftSet = LineDataSet(leftResultsChart, "Left ear")
     leftSet.color = Color.BLUE
