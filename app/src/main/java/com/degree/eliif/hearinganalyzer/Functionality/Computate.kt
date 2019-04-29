@@ -17,7 +17,7 @@ class Computate(private val calibration: Calibration) {
    * Get level in dB HL
    */
   fun getDbHl(frequency: Double, leftSide: Boolean): Double? {
-    return this.getDbSpl(frequency, leftSide)!! + calibration.dbHl[frequency]!!
+    return this.getDbSpl(frequency, leftSide)!! - calibration.dbHl[frequency]!!
   }
 
   /**

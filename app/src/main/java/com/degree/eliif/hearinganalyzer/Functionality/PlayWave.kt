@@ -33,7 +33,7 @@ class PlayWave {
 
   var LEFT_CHANNEL = true
 
-  private var koef = (Math.pow(10.0, 0.5)).toFloat() // 10 db HL
+  private var koef = (Math.pow(10.0, 0.25)).toFloat() // 5 db HL
 
   var currentIndex: Int = 0
 
@@ -131,13 +131,13 @@ class PlayWave {
           when (LEFT_CHANNEL) {
             true -> {
               if (i % 2 == 0) {
-                samples[i] = Math.round(Math.sin(q) * l).toShort()
+                samples[i] = (Math.sin(q) * l).toShort()
               }
             }
 
             false -> {
               if (i % 2 != 0) {
-                samples[i] = Math.round(Math.sin(q) * l).toShort()
+                samples[i] = (Math.sin(q) * l).toShort()
               }
             }
           }
