@@ -23,9 +23,9 @@ class PlayWave {
 
   var FREQUENCY: Double = 400.0
 
-  var LEVEL: Double = 327.67
+  var LEVEL: Float = 0.05F
 
-  var NULL_LEVEL: Double = 0.0
+  var NULL_LEVEL: Float = 0.0F
 
   private var MUTE: Boolean = false
 
@@ -47,7 +47,7 @@ class PlayWave {
         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
         .build())
       .setAudioFormat(AudioFormat.Builder()
-        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+        .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
         .setSampleRate(SAMPLE_RATE)
         .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
         .build())
@@ -110,14 +110,13 @@ class PlayWave {
 
     mAudio.play()
 
-    val samples = ShortArray(size)
-
+    val samples = FloatArray(size)
 
     var f = FREQUENCY
-    var l = 0.0
+    var l = 0.0F
     var q = 0.0
 
-    val k = Math.PI / SAMPLE_RATE
+    val k = (Math.PI / SAMPLE_RATE).toFloat()
 
     thread {
       while (isPlaying) {
@@ -125,41 +124,27 @@ class PlayWave {
         /** Create sin wave **/
         for (i in 0 until samples.size) {
           f += (FREQUENCY - f) / 4096
-          l += ((if (MUTE) 0.0 else LEVEL) - l) / 4096
+          l += ((if (MUTE) 0.0F else LEVEL) - l) / 4096
           q += if (q < Math.PI) f * k else (f * k) - (2.0 * Math.PI)
 
           when (LEFT_CHANNEL) {
             true -> {
               if (i % 2 == 0) {
-                samples[i] = (Math.sin(q) * l).toShort()
+                samples[i] = (Math.sin(q) * l).toFloat()
               }
             }
 
             false -> {
               if (i % 2 != 0) {
-                samples[i] = (Math.sin(q) * l).toShort()
+                samples[i] = (Math.sin(q) * l).toFloat()
               }
             }
           }
         }
 
-        mAudio.write(samples, 0, samples.size)
+         mAudio.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
       }
     }
-  }
-
-  /**
-   * Return level in dB
-   */
-  fun getLevelDb(): String {
-    return Math.round(20 * Math.log10(LEVEL / Short.MAX_VALUE)).toString() + "dB" + " / " + Math.round(LEVEL).toString()
-  }
-
-  /**
-   * Set level back to -40 dB
-   */
-  fun resetLevel() {
-    LEVEL = 327.67
   }
 
   /**
@@ -182,7 +167,7 @@ class PlayWave {
    * Save result to result object
    */
   fun saveResult() {
-    val level = Math.round(20 * Math.log10(LEVEL / NULL_LEVEL))
+    val level = Math.round(20 * Math.log10(((LEVEL / NULL_LEVEL).toDouble())))
     if (LEFT_CHANNEL) {
       result.resultsLeft[FREQUENCY] = level
     } else {
@@ -191,6 +176,6 @@ class PlayWave {
   }
 
   fun getDbHl(): String {
-    return Math.round(20 * Math.log10(LEVEL / NULL_LEVEL)).toString() + "dB HL"
+    return Math.round(20 * Math.log10(((LEVEL / NULL_LEVEL).toDouble()))).toString() + "dB HL"
   }
 }

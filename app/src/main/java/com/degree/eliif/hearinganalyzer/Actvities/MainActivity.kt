@@ -111,10 +111,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     calibrationLayout.visibility = View.VISIBLE
 
-    textView.visibility = View.INVISIBLE
+    // textView.visibility = View.INVISIBLE
 
-    lessVolume.isEnabled = false
-    moreVolume.isEnabled = false
+    // lessVolume.isEnabled = false
+    // moreVolume.isEnabled = false
 
     saveResultButton.isEnabled = false
 
@@ -167,6 +167,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     frequencySpinner.onItemSelectedListener = this
+
+    this.resetLevel()
 
     /** Restore activity state **/
     this.setSharedValues()
@@ -230,15 +232,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     if (parent?.id == R.id.frequencySpinner) {
       setupWave.currentIndex = pos
       setupWave.FREQUENCY = frequencySpinner.getItemAtPosition(pos).toString().toDouble()
-      this.resetLevel()
 
-      textView!!.text = setupWave.getDbHl()
+      if (isCalibration !== null && isCalibration == false) {
+        this.resetLevel()
+        textView!!.text = setupWave.getDbHl()
+      } else {
+        textView!!.text = setupWave.LEVEL.toString()
+      }
     }
   }
 
   fun resetLevel() {
     if (isCalibration !== null && isCalibration == true) {
-      setupWave.LEVEL = 1036.0 // set at -30 dB
+      setupWave.LEVEL = 0.05F
     } else {
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
       val frequencyHz = frequency.toString().toDouble()
@@ -320,7 +326,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
    */
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun playSignal() {
-    textView!!.text = setupWave.getDbHl()
+    if (isCalibration !== null && isCalibration == false) {
+      textView!!.text = setupWave.getDbHl()
+    }
+
     thread {
       setupWave.setWave()
       Thread.sleep(750)
@@ -336,7 +345,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
-    textView!!.text = setupWave.getDbHl()
+
+    if (isCalibration !== null && isCalibration == true) {
+      textView!!.text = setupWave.LEVEL.toString()
+    } else {
+      textView!!.text = setupWave.getDbHl()
+    }
   }
 
   /**
@@ -345,7 +359,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
-    textView!!.text = setupWave.getDbHl()
+    if (isCalibration !== null && isCalibration == true) {
+      textView!!.text = setupWave.LEVEL.toString()
+    } else {
+      textView!!.text = setupWave.getDbHl()
+    }
   }
 
   /**
@@ -402,17 +420,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     when (left) {
       true -> {
-        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toDouble()
+        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toFloat()
         leftProgress.progress = calibrationPOJO.calibrationLeft.size
       }
 
       false -> {
-        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toDouble()
+        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toFloat()
         rightProgress.progress = calibrationPOJO.calibrationRight.size
       }
     }
     calibrationPOJO.measuringLevel = levelInFloat
-    calibrationPOJO.dbHl[frequency] = dbHl.toString().toDouble()
+    calibrationPOJO.dbHl[frequency] = dbHl.toString().toFloat()
   }
 
   /**
