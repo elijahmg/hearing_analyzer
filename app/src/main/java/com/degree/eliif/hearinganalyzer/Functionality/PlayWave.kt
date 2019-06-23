@@ -35,7 +35,9 @@ class PlayWave {
 
   private var koef = (Math.pow(10.0, 0.25)).toFloat() // 5 db HL
 
-  var currentIndex: Int = 0
+  var currentIndex: Int = 4 //start from 1 kHz
+
+  var fromStart = true
 
   private var result = Result()
 

@@ -168,6 +168,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     frequencySpinner.onItemSelectedListener = this
 
+    /** Set start freq from 1kHz **/
+    frequencySpinner.setSelection(setupWave.currentIndex)
+
     this.resetLevel()
 
     /** Restore activity state **/
@@ -265,7 +268,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     if (setupWave.currentIndex + 1 > spinnerLength - 1) {
       Toast.makeText(this, "This is the last frequency", Toast.LENGTH_LONG).show()
     } else {
-      setupWave.currentIndex += 1
+
+      if (setupWave.fromStart) {
+        setupWave.currentIndex = 0
+        setupWave.fromStart = false
+      } else {
+        /** skip 1 kHz **/
+        if (setupWave.currentIndex == 3) {
+          setupWave.currentIndex += 2
+        } else {
+          setupWave.currentIndex += 1
+        }
+      }
 
       frequencySpinner.setSelection(setupWave.currentIndex)
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
@@ -299,7 +313,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     if (view is RadioButton) {
       val checked = view.isChecked
 
-      frequencySpinner.setSelection(0)
+      setupWave.currentIndex = 4
+      setupWave.fromStart = true
+
+      frequencySpinner.setSelection(setupWave.currentIndex)
       textView!!.text = setupWave.getDbHl()
 
       when (view.id) {
