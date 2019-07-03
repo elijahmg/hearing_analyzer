@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.degree.eliif.hearinganalyzer.Dialogs.VolumeDialog
 import com.degree.eliif.hearinganalyzer.Functionality.Computate
 import com.degree.eliif.hearinganalyzer.Functionality.PlayWave
+import com.degree.eliif.hearinganalyzer.LineView
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
@@ -74,6 +75,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     this.initializeSpinner()
     this.initializeListeners()
+
+    this.drawSomeShite()
+  }
+
+
+  fun drawSomeShite() {
+    var graph = findViewById<ImageView>(R.id.graph)
+
+    graph.setImageDrawable(LineView())
   }
 
   /**
