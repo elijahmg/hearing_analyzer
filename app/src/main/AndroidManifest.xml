@@ -14,13 +14,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Actvities.MainActivity"
-            android:parentActivityName=".Actvities.FirstScreenActivity"></activity>
+            android:parentActivityName=".Actvities.FirstScreenActivity"
+            android:screenOrientation="landscape" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".Actvities.FirstScreenActivity">
+        <activity
+            android:name=".Actvities.FirstScreenActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,8 +32,8 @@
         </activity>
         <activity
             android:name=".Actvities.ResultsActivity"
-            android:screenOrientation="landscape"
-            android:parentActivityName=".Actvities.MainActivity" />
+            android:parentActivityName=".Actvities.MainActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

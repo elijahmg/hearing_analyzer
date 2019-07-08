@@ -10,12 +10,10 @@
         android:id="@+id/startTest"
         android:layout_width="wrap_content"
         android:layout_height="44dp"
-        android:layout_marginBottom="192dp"
         android:text="@string/start"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.137"
-        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintBaseline_toBaselineOf="@+id/startCalib"
+        app:layout_constraintEnd_toStartOf="@+id/startCalib"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -39,20 +37,22 @@
         android:id="@+id/loadLast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="124dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="40dp"
         android:onClick="startResultActivity"
         android:text="@string/loadLastResult"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/startCalib" />
 
     <Button
         android:id="@+id/startCalib"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:onClick="startCalibration"
         android:text="@string/startCalibration"
-        app:layout_constraintBaseline_toBaselineOf="@+id/startTest"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/loadLast"
+        app:layout_constraintEnd_toStartOf="@+id/loadLast"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/startTest" />
 </androidx.constraintlayout.widget.ConstraintLayout>

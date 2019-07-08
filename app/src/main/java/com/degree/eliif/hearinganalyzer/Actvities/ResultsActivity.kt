@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -83,11 +82,11 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     lineChart.xAxis.axisMinimum = 100F
     lineChart.xAxis.axisMaximum = 17000F
+    lineChart.xAxis.granularity = 100F
+    lineChart.xAxis.isGranularityEnabled = true
+
 
     lineChart.xAxis.labelCount = resultObj.resultsLeft.size
-
-    // lineChart.xAxis.isGranularityEnabled = true
-    //lineChart.xAxis.granularity = 1F
 
     lineChart.axisLeft.axisMinimum = -5F
     lineChart.axisLeft.axisMaximum = 150F
