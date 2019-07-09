@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   var isCalibration = false as Boolean?
   var isDefaultCalibration = true as Boolean?
 
+  lateinit var GRAPH: ImageView
+
   @TargetApi(Build.VERSION_CODES.O)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +60,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     leftProgress = findViewById(R.id.leftProgress)
     rightProgress = findViewById(R.id.rightProgress)
+
+    GRAPH = findViewById(R.id.graph)
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -80,10 +84,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
 
+  @RequiresApi(Build.VERSION_CODES.N)
   fun drawSomeShite() {
-    var graph = findViewById<ImageView>(R.id.graph)
+    GRAPH.setImageDrawable(LineView(125.0, 40))
 
-    graph.setImageDrawable(LineView())
+
+//    val animator = ValueAnimator.ofFloat(30F, 1000F)
+//    animator.duration = 1000
+//    animator.addUpdateListener { animation ->
+//      val value  = animation.animatedValue
+//    }
+//    animator.start()
   }
 
   /**
@@ -369,6 +380,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   /**
    * Set reduce volume
    */
+  @TargetApi(Build.VERSION_CODES.N)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
     setupWave.less()
@@ -378,11 +390,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     } else {
       textView!!.text = setupWave.getDbHl()
     }
+
+    GRAPH.setImageDrawable(LineView(setupWave.FREQUENCY, setupWave.getRawDbHl()))
   }
 
   /**
    * Set increase volume
    */
+  @TargetApi(Build.VERSION_CODES.N)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
     setupWave.more()
@@ -391,6 +406,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     } else {
       textView!!.text = setupWave.getDbHl()
     }
+
+    GRAPH.setImageDrawable(LineView(setupWave.FREQUENCY, setupWave.getRawDbHl()))
   }
 
   /**

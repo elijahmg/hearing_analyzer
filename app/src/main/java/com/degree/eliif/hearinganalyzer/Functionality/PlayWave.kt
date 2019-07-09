@@ -9,6 +9,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import kotlin.concurrent.thread
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 @TargetApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -33,7 +37,7 @@ class PlayWave {
 
   var LEFT_CHANNEL = true
 
-  private var koef = (Math.pow(10.0, 0.25)).toFloat() // 5 db HL
+  private var koef = (10.0.pow(0.25)).toFloat() // 5 db HL
 
   var currentIndex: Int = 4 //start from 1 kHz
 
@@ -132,13 +136,13 @@ class PlayWave {
           when (LEFT_CHANNEL) {
             true -> {
               if (i % 2 == 0) {
-                samples[i] = (Math.sin(q) * l).toFloat()
+                samples[i] = (sin(q) * l).toFloat()
               }
             }
 
             false -> {
               if (i % 2 != 0) {
-                samples[i] = (Math.sin(q) * l).toFloat()
+                samples[i] = (sin(q) * l).toFloat()
               }
             }
           }
@@ -169,7 +173,7 @@ class PlayWave {
    * Save result to result object
    */
   fun saveResult() {
-    val level = Math.round(20 * Math.log10(((LEVEL / NULL_LEVEL).toDouble())))
+    val level = Math.round(20 * log10(((LEVEL / NULL_LEVEL).toDouble())))
     if (LEFT_CHANNEL) {
       result.resultsLeft[FREQUENCY] = level
     } else {
@@ -177,7 +181,11 @@ class PlayWave {
     }
   }
 
+  fun getRawDbHl(): Int {
+    return (20 * log10(((LEVEL / NULL_LEVEL).toDouble()))).roundToInt()
+  }
+
   fun getDbHl(): String {
-    return Math.round(20 * Math.log10(((LEVEL / NULL_LEVEL).toDouble()))).toString() + "dB HL"
+    return (20 * log10(((LEVEL / NULL_LEVEL).toDouble()))).roundToInt().toString() + "dB HL"
   }
 }
