@@ -28,7 +28,7 @@ class LineView(private val fq: Double, private val levelDbHl: Int) : Drawable() 
   val initialCoordinatesXY = mutableMapOf<Float, Float>()
 
   init {
-    for ((index, y) in (80..475 step 25).withIndex()) {
+    for ((index, y) in (80..530 step 25).withIndex()) {
       coordinatesMapYLevel[levels[index]] = y.toFloat()
     }
 
