@@ -18,6 +18,7 @@ import com.degree.eliif.hearinganalyzer.Functionality.Computate
 import com.degree.eliif.hearinganalyzer.Functionality.PlayWave
 import com.degree.eliif.hearinganalyzer.LineView
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
+import com.degree.eliif.hearinganalyzer.POJO.Coordination
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
 import com.google.gson.Gson
@@ -32,6 +33,8 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
   lateinit var setupWave: PlayWave
+
+  lateinit var coordination: Coordination
   var calibrationPOJO = Calibration()
 
   val CALIBRATION_FILE = "customCalibration.json"
@@ -58,6 +61,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     setupWave = PlayWave()
 
+    coordination = Coordination()
+
     leftProgress = findViewById(R.id.leftProgress)
     rightProgress = findViewById(R.id.rightProgress)
 
@@ -80,21 +85,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     this.initializeSpinner()
     this.initializeListeners()
 
-    this.drawSomeShite()
+    this.drawGraph()
   }
 
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun drawSomeShite() {
-    GRAPH.setImageDrawable(LineView(125.0, 40))
-
-
-//    val animator = ValueAnimator.ofFloat(30F, 1000F)
-//    animator.duration = 1000
-//    animator.addUpdateListener { animation ->
-//      val value  = animation.animatedValue
-//    }
-//    animator.start()
+  fun drawGraph() {
+    GRAPH.setImageDrawable(LineView(coordination.leftCoordinatesXY, coordination.rightCoordinatesXY))
   }
 
   /**
@@ -377,6 +374,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.N)
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+  fun redraw() {
+    coordination.changeCoordinates(setupWave.FREQUENCY, setupWave.getRawDbHl(), setupWave.LEFT_CHANNEL)
+    GRAPH.setImageDrawable(LineView(coordination.leftCoordinatesXY, coordination.rightCoordinatesXY))
+  }
+
   /**
    * Set reduce volume
    */
@@ -391,7 +395,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       textView!!.text = setupWave.getDbHl()
     }
 
-    GRAPH.setImageDrawable(LineView(setupWave.FREQUENCY, setupWave.getRawDbHl()))
+    this.redraw()
   }
 
   /**
@@ -407,7 +411,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       textView!!.text = setupWave.getDbHl()
     }
 
-    GRAPH.setImageDrawable(LineView(setupWave.FREQUENCY, setupWave.getRawDbHl()))
+    this.redraw()
   }
 
   /**
@@ -528,6 +532,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   fun openResultActivity() {
     val resultIntent = Intent(this, ResultsActivity::class.java)
     resultIntent.putExtra("results", setupWave.getResult())
+    resultIntent.putExtra("coordination", coordination)
     startActivity(resultIntent)
 
 

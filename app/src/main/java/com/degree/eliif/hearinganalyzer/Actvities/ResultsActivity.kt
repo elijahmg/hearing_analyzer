@@ -1,27 +1,26 @@
 package com.degree.eliif.hearinganalyzer.Actvities
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.degree.eliif.hearinganalyzer.LineView
+import com.degree.eliif.hearinganalyzer.POJO.Coordination
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_results.*
 import java.io.*
 
-class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
+class ResultsActivity : AppCompatActivity() {
   private lateinit var resultObj: Result
+  private lateinit var resultCoordination: Coordination
+
+  lateinit var GRAPH: ImageView
   private var RESULT_FILE = "result.json"
 
   private lateinit var lineChart: LineChart
@@ -29,6 +28,7 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
   private var axisData: MutableList<Int> = mutableListOf(3, 6, 7, 9, 7)
   private var yAxisData: MutableList<Int> = mutableListOf(5, 6, 7, 9, 7)
 
+  @RequiresApi(Build.VERSION_CODES.N)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_results)
@@ -37,77 +37,23 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     val isLoadAllow = intent?.extras?.get("loadLast")
 
+    GRAPH = findViewById(R.id.graphResult)
+
     if (isLoadAllow != null) {
       this.load()
     } else {
       resultObj = intent?.extras?.getSerializable("results") as Result
-
-      var resultAsStringLeft = ""
-      var resultAsStringRight = ""
-
-      resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
-      resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB HL" + "\n" }
-
-      this.initializeChart()
+      resultCoordination = intent?.extras?.getSerializable("coordination") as Coordination
     }
+
+    this.initializeGraph()
   }
 
-  private fun initializeChart() {
-    lineChart = findViewById(R.id.lineChart)
-
-    val rightResultsChart = mutableListOf<Entry>()
-    val leftResultsChart = mutableListOf<Entry>()
-
-    resultObj.resultsLeft.map { (k, v) -> leftResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
-    resultObj.resultsRight.map { (k, v) -> rightResultsChart.add(Entry(k.toFloat(), v.toFloat())) }
-
-    val leftSet = LineDataSet(leftResultsChart, "Left ear")
-    leftSet.color = Color.BLUE
-    leftSet.fillAlpha = 110
-    leftSet.valueTextSize = 10f
-
-    val rightSet = LineDataSet(rightResultsChart, "Right ear")
-    rightSet.color = Color.RED
-    rightSet.fillAlpha = 110
-    leftSet.valueTextSize = 10f
-
-    val dataSets = mutableListOf<ILineDataSet>()
-    dataSets.add(leftSet)
-    dataSets.add(rightSet)
-
-    val lineData = LineData(dataSets)
-
-    lineChart.axisLeft.isInverted = true
-    lineChart.axisRight.isEnabled = false
-
-    lineChart.xAxis.axisMinimum = 100F
-    lineChart.xAxis.axisMaximum = 17000F
-    lineChart.xAxis.granularity = 100F
-    lineChart.xAxis.isGranularityEnabled = true
-
-
-    lineChart.xAxis.labelCount = resultObj.resultsLeft.size
-
-    lineChart.axisLeft.axisMinimum = -5F
-    lineChart.axisLeft.axisMaximum = 150F
-
-    lineChart.description = null
-
-    lineChart.setOnChartValueSelectedListener(this)
-    lineChart.data = lineData
+  @RequiresApi(Build.VERSION_CODES.N)
+  fun initializeGraph() {
+    GRAPH.setImageDrawable(LineView(resultCoordination.leftCoordinatesXY, resultCoordination.rightCoordinatesXY))
   }
 
-  @SuppressLint("SetTextI18n")
-  override fun onValueSelected(e: Entry?, h: Highlight?) {
-    fq.text = e?.x.toString() + "Hz"
-    dbHL.text = e?.y.toString() + "dB HL"
-  }
-
-  @SuppressLint("SetTextI18n")
-  override fun onNothingSelected() {
-    fq.text = "Hz"
-    dbHL.text = "dB HL"
-  }
 
   /**
    * Save to external doc
@@ -117,7 +63,7 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     try {
       val gson = Gson()
-      val resultAsString = gson.toJson(resultObj)
+      val resultAsString = gson.toJson(resultCoordination)
 
       leftFile.write(resultAsString.toByteArray())
 
@@ -134,8 +80,11 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
   /**
    * Load from doc
    */
+  @RequiresApi(Build.VERSION_CODES.N)
   fun loadFromDoc(view: View) {
     this.load()
+
+    this.initializeGraph()
   }
 
   private fun load() {
@@ -147,17 +96,8 @@ class ResultsActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     val gson = Gson()
 
-    resultObj = gson.fromJson(resultsString, Result::class.java)
-
-    var resultAsStringLeft = ""
-    var resultAsStringRight = ""
-
-    resultObj.resultsLeft.map { (k, v) -> resultAsStringLeft += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
-    resultObj.resultsRight.map { (k, v) -> resultAsStringRight += k.toString() + "Hz: " + v.toString() + "dB" + "\n" }
-
+    resultCoordination = gson.fromJson(resultsString, Coordination::class.java)
 
     leftFile.close()
-
-    this.initializeChart()
   }
 }

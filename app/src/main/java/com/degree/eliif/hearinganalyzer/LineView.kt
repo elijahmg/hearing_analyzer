@@ -6,66 +6,65 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.N)
-class LineView(private val fq: Double, private val levelDbHl: Int) : Drawable() {
-  /** 16 **/
-  var frequincies = mutableListOf(
-    125.0, 250.0, 500.0, 750.0,
-    1000.0, 1500.0, 2000.0,
-    3000.0, 4000.0, 8000.0,
-    9000.0, 10000.0, 112000.0,
-    14000.0, 16000.0)
-
-  /** 19 **/
-  var levels = mutableListOf(
-    -10, -5, 0, 5, 10, 15, 20,
-    25, 30, 35, 40, 45, 50, 55, 60, 65,
-    70, 75, 80)
-
-  val coordinatesMapXFq = mutableMapOf<Double, Float>()
-  val coordinatesMapYLevel = mutableMapOf<Int, Float>()
-
-  val initialCoordinatesFqLevel = mutableMapOf<Double, Int>()
-  val initialCoordinatesXY = mutableMapOf<Float, Float>()
-
-  init {
-    for ((index, y) in (80..530 step 25).withIndex()) {
-      coordinatesMapYLevel[levels[index]] = y.toFloat()
-    }
-
-    for ((index, x) in (110..970 step 60).withIndex()) {
-      coordinatesMapXFq[frequincies[index]] = x.toFloat()
-    }
-
-    frequincies.forEach { t -> initialCoordinatesFqLevel[t] = 40 }
-
-    initialCoordinatesFqLevel[fq] = levelDbHl
-
-    initialCoordinatesFqLevel.map { (key, value) ->
-      run {
-        val x = coordinatesMapXFq[key]
-        val y = coordinatesMapYLevel[value]
-
-        if (y != null && x != null) {
-          initialCoordinatesXY[x.toFloat()] = y.toFloat()
-        }
-      }
-    }
-  }
+class LineView(
+  private val leftCoordinatesXY: MutableMap<Float, Float>,
+  private val rightCoordinatesXY: MutableMap<Float, Float>) : Drawable() {
 
   override fun draw(canvas: Canvas) {
 
     this.drawGraph(canvas)
+    this.drawLeft(canvas)
+    this.drawRight(canvas)
+  }
 
-    initialCoordinatesXY.forEach { (x, y) ->
+  private fun drawLeft(canvas: Canvas) {
+    val path = Path()
+
+    val paint = Paint()
+    paint.color = Color.RED
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = 6f
+
+    val firstX = leftCoordinatesXY.keys.iterator().next()
+    val firstY = leftCoordinatesXY[firstX]!!
+
+    path.reset()
+
+    path.moveTo(firstX, firstY)
+    leftCoordinatesXY.forEach { (x, y) ->
       this.drawCircle(canvas, x, y)
-      this.drawCross(canvas, x, y)
+      path.lineTo(x, y)
     }
+
+    canvas.drawPath(path, paint)
+  }
+
+  private fun drawRight(canvas: Canvas) {
+    val path = Path()
+
+    val paint = Paint()
+    paint.color = Color.BLUE
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = 6f
+
+    val firstX = leftCoordinatesXY.keys.iterator().next()
+    val firstY = rightCoordinatesXY[firstX]!!
+
+    path.reset()
+
+    path.moveTo(firstX, firstY)
+    rightCoordinatesXY.forEach { (x, y) ->
+      this.drawCross(canvas, x, y)
+      path.lineTo(x, y)
+    }
+
+    canvas.drawPath(path, paint)
   }
 
   private fun drawCross(canvas: Canvas, x: Float, y: Float) {
     val paint = Paint()
     paint.style = Paint.Style.STROKE
-    paint.strokeWidth = 3F
+    paint.strokeWidth = 4F
     paint.color = Color.BLUE
 
     canvas.drawLine(x - 15F, y - 20F, x + 15f, y + 20F, paint)
@@ -90,11 +89,20 @@ class LineView(private val fq: Double, private val levelDbHl: Int) : Drawable() 
     val xVal = arrayListOf("125", "250", "500", "750", "1k", "1.5k", "2k", "3k", "4k", "8k", "9k", "10k", "11.2k", "14k", "16k")
 
     // Vertical
-    for ((index, x) in (50..1020 step 60).withIndex()) {
-      canvas.drawLine(x.toFloat(), 30F, x.toFloat(), 580F, paint)
+    for ((index, x) in (150..1120 step 60).withIndex()) {
+      if (index != 0 && index % 2 == 0 && x < 1080) {
+        canvas.drawLine(x.toFloat(), 160F, x.toFloat(), 660F, paint)
+      } else {
+        canvas.drawLine(x.toFloat(), 110F, x.toFloat(), 660F, paint)
+      }
       if (index != 0) {
         if (index - 1 < xVal.size) {
-          canvas.drawText(xVal[index - 1], x.toFloat() - 20, 20F, paint)
+          if (index != 0 && index % 2 == 0 && x < 1080) {
+            canvas.drawText(xVal[index - 1], x.toFloat() - 20, 150F, paint)
+
+          } else {
+            canvas.drawText(xVal[index - 1], x.toFloat() - 20, 100F, paint)
+          }
         }
       }
     }
@@ -102,16 +110,21 @@ class LineView(private val fq: Double, private val levelDbHl: Int) : Drawable() 
     val yVal = arrayListOf("-10", "0", "10", "20", "30", "40", "50", "60", "70", "80")
 
     // Horizontal
-    for ((index, y) in (30..620 step 50).withIndex()) {
-      canvas.drawLine(50F, y.toFloat(), 1010F, y.toFloat(), paint)
+    for ((index, y) in (110..700 step 50).withIndex()) {
+      canvas.drawLine(150F, y.toFloat(), 1110F, y.toFloat(), paint)
 
       // render y vals
       if (index != 0) {
         if (index - 1 < yVal.size) {
-          canvas.drawText(yVal[index - 1], 0F, y.toFloat() + 10F, paint)
+          canvas.drawText(yVal[index - 1], 100F, y.toFloat() + 10F, paint)
         }
       }
     }
+    canvas.drawText("Frequencies [Hz]", 500F, 40F, paint)
+
+    canvas.rotate(270F)
+    canvas.drawText("dB [HL]", -450F, 80F, paint)
+    canvas.rotate(-270F)
   }
 
   override fun setAlpha(alpha: Int) {
