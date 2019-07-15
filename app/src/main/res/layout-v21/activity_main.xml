@@ -7,163 +7,177 @@
     tools:background="?attr/colorBackgroundFloating"
     tools:context=".Actvities.MainActivity">
 
-    <RadioGroup
-        android:id="@+id/radioGroup2"
-        android:layout_width="202dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonsWrap"
+        android:layout_width="247dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/right"
-            android:layout_width="170dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/right" />
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="202dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/left"
-            android:layout_width="170dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:checked="true"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/left" />
+            <RadioButton
+                android:id="@+id/right"
+                android:layout_width="170dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/right" />
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/left"
+                android:layout_width="170dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:checked="true"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/left" />
 
-    <Button
-        android:id="@+id/play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/play"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/moreVolume" />
+        </RadioGroup>
 
-    <Spinner
-        android:id="@+id/frequencySpinner"
-        android:layout_width="139dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/nextFq"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/frequencies"
+            android:layout_width="82dp"
+            android:layout_height="23dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/frequencies"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/frequencySpinner"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:textAlignment="center" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="28dp"
-        android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/frequencySpinner"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        <Spinner
+            android:id="@+id/frequencySpinner"
+            android:layout_width="110dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/play"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/lessVolume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="less"
-        android:text="@string/iCanHear"
-        app:layout_constraintBaseline_toBaselineOf="@+id/moreVolume"
-        app:layout_constraintEnd_toStartOf="@+id/moreVolume"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/saveResult" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="23dp"
+            android:layout_marginStart="24dp"
+            android:text="@string/amplitude"
+            app:layout_constraintBaseline_toBaselineOf="@+id/frequencies"
+            app:layout_constraintStart_toEndOf="@+id/frequencies" />
 
-    <Button
-        android:id="@+id/moreVolume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="more"
-        android:text="@string/iCannotHear"
-        app:layout_constraintBaseline_toBaselineOf="@+id/play"
-        app:layout_constraintEnd_toStartOf="@+id/play"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/lessVolume" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="64dp"
+            android:text="TextView"
 
-    <Button
-        android:id="@+id/saveResult"
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:onClick="save"
-        android:text="@string/save_result"
-        app:layout_constraintBaseline_toBaselineOf="@+id/lessVolume"
-        app:layout_constraintEnd_toStartOf="@+id/lessVolume"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/finishTest" />
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/frequencySpinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/frequencySpinner" />
 
-    <Button
-        android:id="@+id/finishTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/result"
-        app:layout_constraintBaseline_toBaselineOf="@+id/saveResult"
-        app:layout_constraintEnd_toStartOf="@+id/saveResult"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/play"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/play"
+            app:layout_constraintBottom_toTopOf="@+id/previousFq2"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/frequencies"
-        android:layout_width="82dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/frequencies"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/frequencySpinner"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:textAlignment="center" />
+        <Button
+            android:id="@+id/previousFq2"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:onClick="setPreviousFrequency"
+            android:text="@string/previousFrq"
+            app:layout_constraintBottom_toTopOf="@+id/lessVolume"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:text="@string/amplitude"
-        app:layout_constraintBaseline_toBaselineOf="@+id/frequencies"
-        app:layout_constraintStart_toEndOf="@+id/frequencies" />
+        <Button
+            android:id="@+id/nextFq"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="12dp"
+            android:text="@string/nextFrq"
+            app:layout_constraintBottom_toTopOf="@+id/moreVolume"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/previousFq2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="setPreviousFrequency"
-        android:text="@string/previousFrq"
-        app:layout_constraintBottom_toTopOf="@+id/finishTest"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/nextFq"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/nextFrq"
-        app:layout_constraintBottom_toTopOf="@+id/previousFq2"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/lessVolume"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:onClick="less"
+            android:text="@string/iCanHear"
+            app:layout_constraintBottom_toTopOf="@+id/finishTest"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/moreVolume"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:onClick="more"
+            android:text="@string/iCannotHear"
+            app:layout_constraintBottom_toTopOf="@+id/saveResult"
+            app:layout_constraintEnd_toEndOf="@+id/saveResult"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/lessVolume" />
+
+
+        <Button
+            android:id="@+id/saveResult"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="save"
+            android:text="@string/save_result"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/finishTest" />
+
+        <Button
+            android:id="@+id/finishTest"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/result"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calibrationLayout"
-        android:layout_width="366dp"
-        android:layout_height="199dp"
+        android:layout_width="416dp"
+        android:layout_height="256dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.459">
+        app:layout_constraintVertical_bias="0.492">
 
 
         <TextView
@@ -243,8 +257,8 @@
             android:id="@+id/calibHl"
             android:layout_width="151dp"
             android:layout_height="48dp"
-            android:layout_marginTop="84dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="140dp"
+            android:layout_marginEnd="28dp"
             android:ems="10"
             android:focusable="true"
             android:hint="db HL"
@@ -269,18 +283,12 @@
 
     <ImageView
         android:id="@+id/graph"
-        android:layout_width="438dp"
-        android:layout_height="260dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintStart_toEndOf="@+id/buttonsWrap"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

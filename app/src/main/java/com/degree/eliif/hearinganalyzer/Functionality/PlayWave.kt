@@ -71,14 +71,30 @@ class PlayWave {
   /**
    * Reduce by 5db
    */
-  fun less() {
+  fun less(isCalibration: Boolean?) {
+
+    if (!isCalibration!!) {
+      val tempLevel = LEVEL / koef
+      val tempdbHLLevel = (20 * log10(((tempLevel / NULL_LEVEL).toDouble()))).roundToInt()
+
+      if (tempdbHLLevel < -10) return
+    }
+
     LEVEL /= koef
   }
 
   /**
    * Increase by 5db
    */
-  fun more() {
+  fun more(isCalibration: Boolean?) {
+
+    if (!isCalibration!!) {
+      val tempLevel = LEVEL * koef
+      val tempdbHLLevel = (20 * log10(((tempLevel / NULL_LEVEL).toDouble()))).roundToInt()
+
+      if (tempdbHLLevel > 95) return
+    }
+
     LEVEL *= koef
   }
 
@@ -148,7 +164,7 @@ class PlayWave {
           }
         }
 
-         mAudio.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
+        mAudio.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
       }
     }
   }

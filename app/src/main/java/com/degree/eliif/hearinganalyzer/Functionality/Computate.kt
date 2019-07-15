@@ -1,5 +1,6 @@
 package com.degree.eliif.hearinganalyzer.Functionality
 
+import android.util.Log
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
 
 class Computate(private val calibration: Calibration) {
@@ -27,5 +28,9 @@ class Computate(private val calibration: Calibration) {
     val calibrationFloatLevel = calibration.measuringLevel
     val measuredDbHLLevel = this.getDbHl(frequency, leftSide)
     return (calibrationFloatLevel / (Math.pow(10.toDouble(), (measuredDbHLLevel!! / 20).toDouble()))).toFloat()
+  }
+
+  override fun toString(): String {
+    return calibration.toString()
   }
 }

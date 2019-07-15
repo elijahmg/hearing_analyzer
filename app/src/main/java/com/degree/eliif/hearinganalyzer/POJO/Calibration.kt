@@ -9,4 +9,8 @@ class Calibration : Serializable {
   var dbHl: MutableMap<Double, Float> = mutableMapOf()
 
   var measuringLevel: Float = 0.0F
+
+  override fun toString(): String {
+    return calibrationLeft.toString()
+  }
 }

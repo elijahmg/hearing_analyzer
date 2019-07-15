@@ -129,10 +129,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     calibrationLayout.visibility = View.VISIBLE
 
-    // textView.visibility = View.INVISIBLE
-
-    // lessVolume.isEnabled = false
-    // moreVolume.isEnabled = false
+    GRAPH.visibility = View.INVISIBLE
 
     saveResultButton.isEnabled = false
 
@@ -189,10 +186,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     /** Set start freq from 1kHz **/
     frequencySpinner.setSelection(setupWave.currentIndex)
 
-    this.resetLevel()
-
     /** Restore activity state **/
     this.setSharedValues()
+
+    this.resetLevel()
   }
 
   /**
@@ -209,6 +206,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     val position = sharedPref.getInt("pos", 0)
     val resultAsString = sharedPref.getString("result", "")
+    val coordinationAsString = sharedPref.getString("coordination", "")
     val side = sharedPref.getBoolean("side", true)
 
     isDefaultCalibration = sharedPref.getBoolean("isDefaultCalibration", true)
@@ -227,12 +225,20 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
       setupWave.FREQUENCY = frequency.toString().toDouble()
     }
 
-    /** Setting object **/
+    /** Setting Result **/
     if (resultAsString != "") {
       val gson = Gson()
       val resultAsObject = gson.fromJson(resultAsString, Result::class.java)
 
       setupWave.setResult(resultAsObject)
+    }
+
+    /** Setting coordination **/
+    if (coordinationAsString != "") {
+      val gson = Gson()
+      val coordinationAsObject = gson.fromJson(coordinationAsString, Coordination::class.java)
+
+      coordination = coordinationAsObject
     }
 
     leftProgress.progress = sharedPref.getInt("leftProgress", 0)
@@ -291,12 +297,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         setupWave.currentIndex = 0
         setupWave.fromStart = false
       } else {
-        /** skip 1 kHz **/
-        if (setupWave.currentIndex == 3) {
-          setupWave.currentIndex += 2
-        } else {
-          setupWave.currentIndex += 1
-        }
+        setupWave.currentIndex += 1
       }
 
       frequencySpinner.setSelection(setupWave.currentIndex)
@@ -387,7 +388,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @TargetApi(Build.VERSION_CODES.N)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun less(view: View) {
-    setupWave.less()
+    setupWave.less(isCalibration)
 
     if (isCalibration !== null && isCalibration == true) {
       textView!!.text = setupWave.LEVEL.toString()
@@ -404,7 +405,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   @TargetApi(Build.VERSION_CODES.N)
   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   fun more(view: View) {
-    setupWave.more()
+    setupWave.more(isCalibration)
     if (isCalibration !== null && isCalibration == true) {
       textView!!.text = setupWave.LEVEL.toString()
     } else {
@@ -539,10 +540,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     val sharedRef = getSharedPreferences("share", Context.MODE_PRIVATE) ?: return
     val gson = Gson()
     val objAsString = gson.toJson(setupWave.getResult())
+    val coordinationAsResult = gson.toJson(coordination)
 
     with(sharedRef.edit()) {
       putInt("pos", setupWave.currentIndex)
       putString("result", objAsString)
+      putString("coordination", coordinationAsResult)
       putBoolean("side", setupWave.LEFT_CHANNEL)
       putBoolean("isDefaultCalibration", isDefaultCalibration!!)
       putBoolean("isCalibration", isCalibration!!)

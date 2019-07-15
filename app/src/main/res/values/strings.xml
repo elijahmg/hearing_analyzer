@@ -4,11 +4,11 @@
     <string name="play">Play</string>
     <string name="stop">Stop</string>
     <string name="iCanHear">-5 dB HL</string>
-    <string name="iCannotHear">+5n dB HL</string>
+    <string name="iCannotHear">+5 dB HL</string>
 
-    <string name="nextFrq">Next Frequency</string>
-    <string name="previousFrq">Previous Frequency</string>
-    <string name="save_result">Save result</string>
+    <string name="nextFrq">Next Fq</string>
+    <string name="previousFrq">Prev Fq</string>
+    <string name="save_result">Save</string>
 
     <string name="left">Left Channel</string>
     <string name="right">Right Channel</string>
@@ -20,11 +20,11 @@
 
     <string name="info">
         This is a Hear analyzer\n
-        Please set volume\n on phone/tablet\n and on external device to max
+        Connect external device to achieve more accurate results
     </string>
 
     <string name="start">Start test</string>
-    <string name="result">Finish test and see results</string>
+    <string name="result">Finish test</string>
     <string name="frequencies">Frequencies</string>
     <string name="dbHl">db HL</string>
     <string name="amplitude">Amplitude</string>
@@ -48,7 +48,6 @@
         <item>2000</item>
         <item>3000</item>
         <item>4000</item>
-        <item>6000</item>
         <item>8000</item>
         <item>9000</item>
         <item>10000</item>

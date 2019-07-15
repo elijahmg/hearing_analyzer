@@ -12,7 +12,6 @@ import com.degree.eliif.hearinganalyzer.LineView
 import com.degree.eliif.hearinganalyzer.POJO.Coordination
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
-import com.github.mikephil.charting.charts.LineChart
 import com.google.gson.Gson
 import java.io.*
 
@@ -22,11 +21,6 @@ class ResultsActivity : AppCompatActivity() {
 
   lateinit var GRAPH: ImageView
   private var RESULT_FILE = "result.json"
-
-  private lateinit var lineChart: LineChart
-
-  private var axisData: MutableList<Int> = mutableListOf(3, 6, 7, 9, 7)
-  private var yAxisData: MutableList<Int> = mutableListOf(5, 6, 7, 9, 7)
 
   @RequiresApi(Build.VERSION_CODES.N)
   override fun onCreate(savedInstanceState: Bundle?) {
