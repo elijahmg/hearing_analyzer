@@ -1,9 +1,8 @@
 package com.degree.eliif.hearinganalyzer.Functionality
 
-import android.util.Log
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
 
-class Computate(private val calibration: Calibration) {
+class Compute(private val calibration: Calibration) {
   /**
    * Get level in dB SPL
    */

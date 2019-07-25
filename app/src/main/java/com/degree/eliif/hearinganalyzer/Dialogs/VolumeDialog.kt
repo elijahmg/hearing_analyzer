@@ -10,7 +10,7 @@ class VolumeDialog : AppCompatDialogFragment() {
     val dialog = AlertDialog.Builder(activity)
 
     dialog.setTitle("Volume alert")
-      .setMessage("Do not change the volume on your device, use +10 dB HL /-10 dB HL to operate signal volume")
+      .setMessage("Do not change the volume on your device, use +5 dB HL /-5 dB HL to operate signal volume instead")
       .setPositiveButton("Ok" ){ _, _ ->  }
     return dialog.create()
   }

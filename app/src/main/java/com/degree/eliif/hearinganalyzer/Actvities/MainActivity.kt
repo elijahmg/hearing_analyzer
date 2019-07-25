@@ -14,9 +14,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.degree.eliif.hearinganalyzer.Dialogs.VolumeDialog
-import com.degree.eliif.hearinganalyzer.Functionality.Computate
+import com.degree.eliif.hearinganalyzer.Functionality.Compute
+import com.degree.eliif.hearinganalyzer.Functionality.LineView
 import com.degree.eliif.hearinganalyzer.Functionality.PlayWave
-import com.degree.eliif.hearinganalyzer.LineView
 import com.degree.eliif.hearinganalyzer.POJO.Calibration
 import com.degree.eliif.hearinganalyzer.POJO.Coordination
 import com.degree.eliif.hearinganalyzer.POJO.Result
@@ -275,7 +275,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     } else {
       val frequency = frequencySpinner.getItemAtPosition(setupWave.currentIndex)
       val frequencyHz = frequency.toString().toDouble()
-      val levelInFloat = Computate(calibrationPOJO).getFloatLevelForNullSpl(frequencyHz, setupWave.LEFT_CHANNEL)
+      val levelInFloat = Compute(calibrationPOJO).getFloatLevelForNullSpl(frequencyHz, setupWave.LEFT_CHANNEL)
 
       setupWave.NULL_LEVEL = levelInFloat!!
       setupWave.LEVEL = levelInFloat * 100 // set at 40 dB HL
@@ -467,19 +467,23 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     val levelInFloat = setupWave.LEVEL
 
-    when (left) {
-      true -> {
-        calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toFloat()
-        leftProgress.progress = calibrationPOJO.calibrationLeft.size
-      }
+    try {
+      when (left) {
+        true -> {
+          calibrationPOJO.calibrationLeft[frequency] = dbSPL.toString().toFloat()
+          leftProgress.progress = calibrationPOJO.calibrationLeft.size
+        }
 
-      false -> {
-        calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toFloat()
-        rightProgress.progress = calibrationPOJO.calibrationRight.size
+        false -> {
+          calibrationPOJO.calibrationRight[frequency] = dbSPL.toString().toFloat()
+          rightProgress.progress = calibrationPOJO.calibrationRight.size
+        }
       }
+      calibrationPOJO.measuringLevel = levelInFloat
+      calibrationPOJO.dbHl[frequency] = dbHl.toString().toFloat()
+    } catch (ex: NumberFormatException) {
+      Toast.makeText(this, "Calibration fields cannot be empty", Toast.LENGTH_SHORT).show()
     }
-    calibrationPOJO.measuringLevel = levelInFloat
-    calibrationPOJO.dbHl[frequency] = dbHl.toString().toFloat()
   }
 
   /**

@@ -1,4 +1,4 @@
-package com.degree.eliif.hearinganalyzer
+package com.degree.eliif.hearinganalyzer.Functionality
 
 import android.graphics.*
 import android.graphics.drawable.Drawable

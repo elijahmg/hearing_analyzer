@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.degree.eliif.hearinganalyzer.LineView
+import com.degree.eliif.hearinganalyzer.Functionality.LineView
 import com.degree.eliif.hearinganalyzer.POJO.Coordination
 import com.degree.eliif.hearinganalyzer.POJO.Result
 import com.degree.eliif.hearinganalyzer.R
