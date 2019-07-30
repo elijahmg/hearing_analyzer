@@ -6,7 +6,7 @@ class Coordination: Serializable {
   var frequincies = mutableListOf(
     125.0, 250.0, 500.0, 750.0,
     1000.0, 1500.0, 2000.0,
-    3000.0, 4000.0, 8000.0,
+    3000.0, 4000.0, 6000.0, 8000.0,
     9000.0, 10000.0, 11200.0,
     14000.0, 16000.0)
 
@@ -29,7 +29,7 @@ class Coordination: Serializable {
       coordinatesMapYLevel[levels[index]] = y.toFloat()
     }
 
-    for ((index, x) in (180..1160 step 70).withIndex()) {
+    for ((index, x) in (180..1230 step 70).withIndex()) {
       coordinatesMapXFq[frequincies[index]] = x.toFloat()
     }
 

@@ -21,7 +21,7 @@ class LineView(
     val path = Path()
 
     val paint = Paint()
-    paint.color = Color.RED
+    paint.color = Color.BLUE
     paint.style = Paint.Style.STROKE
     paint.strokeWidth = 6f
 
@@ -32,7 +32,7 @@ class LineView(
 
     path.moveTo(firstX, firstY)
     leftCoordinatesXY.forEach { (x, y) ->
-      this.drawCircle(canvas, x, y)
+      this.drawCross(canvas, x, y)
       path.lineTo(x, y)
     }
 
@@ -43,7 +43,7 @@ class LineView(
     val path = Path()
 
     val paint = Paint()
-    paint.color = Color.BLUE
+    paint.color = Color.RED
     paint.style = Paint.Style.STROKE
     paint.strokeWidth = 6f
 
@@ -54,7 +54,7 @@ class LineView(
 
     path.moveTo(firstX, firstY)
     rightCoordinatesXY.forEach { (x, y) ->
-      this.drawCross(canvas, x, y)
+      this.drawCircle(canvas, x, y)
       path.lineTo(x, y)
     }
 
@@ -86,7 +86,7 @@ class LineView(
     paint.strokeWidth = 4F
     paint.textSize = 40F
 
-    val xVal = arrayListOf("125", "250", "500", "750", "1k", "1.5k", "2k", "3k", "4k", "8k", "9k", "10k", "11.2k", "14k", "16k")
+    val xVal = arrayListOf("125", "250", "500", "750", "1k", "1.5k", "2k", "3k", "4k", "6k", "8k", "9k", "10k", "11.2k", "14k", "16k")
 
     // Vertical
     for ((index, x) in (110..1230 step 70).withIndex()) {
